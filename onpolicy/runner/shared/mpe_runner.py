@@ -242,7 +242,21 @@ class MPERunner(Runner):
                 else:
                     envs.render('human')
 
-            print("average episode rewards is: " + str(np.mean(np.sum(np.array(episode_rewards), axis=0))))
+            episode_rewards = np.array(episode_rewards)
+            # [episode_steps, n_envs, num_agents] -> [n_envs, num_agents]
+            episode_returns = np.sum(episode_rewards, axis=0)
+            agent_mean_returns = np.mean(episode_returns, axis=0)
+
+            for agent_id in range(self.num_agents):
+                print("eval average episode rewards of agent{}: {}".format(agent_id, agent_mean_returns[agent_id]))
+
+            if hasattr(self.all_args, "num_adversaries") and 0 < self.all_args.num_adversaries < self.num_agents:
+                num_adversaries = self.all_args.num_adversaries
+                adv_ret = np.mean(agent_mean_returns[:num_adversaries])
+                good_ret = np.mean(agent_mean_returns[num_adversaries:])
+                print("predator(avg): {}, prey(avg): {}".format(adv_ret, good_ret))
+
+            print("all-agents average episode rewards: {}".format(np.mean(agent_mean_returns)))
 
         if self.all_args.save_gifs:
             imageio.mimsave(str(self.gif_dir) + '/render.gif', all_frames, duration=self.all_args.ifi)

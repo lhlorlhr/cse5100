@@ -1,13 +1,15 @@
 #!/usr/bin/env python
 import sys
 import os
-import wandb
 import socket
-import setproctitle
 import numpy as np
 from pathlib import Path
 
 import torch
+try:
+    import setproctitle
+except ImportError:
+    setproctitle = None
 
 from onpolicy.config import get_config
 
@@ -37,6 +39,10 @@ def parse_args(args, parser):
     parser.add_argument("--num_landmarks", type=int, default=3)
     parser.add_argument('--num_agents', type=int,
                         default=2, help="number of players")
+    parser.add_argument('--num_good_agents', type=int,
+                        default=1, help="number of good agents (for simple_tag)")
+    parser.add_argument('--num_adversaries', type=int,
+                        default=3, help="number of adversaries (for simple_tag)")
 
     all_args = parser.parse_known_args(args)[0]
 
@@ -98,8 +104,9 @@ def main(args):
     if not run_dir.exists():
         os.makedirs(str(run_dir))
 
-    setproctitle.setproctitle(str(all_args.algorithm_name) + "-" + \
-        str(all_args.env_name) + "-" + str(all_args.experiment_name) + "@" + str(all_args.user_name))
+    if setproctitle is not None:
+        setproctitle.setproctitle(str(all_args.algorithm_name) + "-" + \
+            str(all_args.env_name) + "-" + str(all_args.experiment_name) + "@" + str(all_args.user_name))
 
     # seed
     torch.manual_seed(all_args.seed)

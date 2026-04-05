@@ -27,7 +27,7 @@ class R_MAPPO():
         self.data_chunk_length = args.data_chunk_length
         self.value_loss_coef = args.value_loss_coef
         self.entropy_coef = args.entropy_coef
-        self.max_grad_norm = args.max_grad_norm       
+        self.max_grad_norm = args.max_grad_norm
         self.huber_delta = args.huber_delta
 
         self._use_recurrent_policy = args.use_recurrent_policy
@@ -39,9 +39,9 @@ class R_MAPPO():
         self._use_valuenorm = args.use_valuenorm
         self._use_value_active_masks = args.use_value_active_masks
         self._use_policy_active_masks = args.use_policy_active_masks
-        
+
         assert (self._use_popart and self._use_valuenorm) == False, ("self._use_popart and self._use_valuenorm can not be set True simultaneously")
-        
+
         if self._use_popart:
             self.value_normalizer = self.policy.critic.v_out
         elif self._use_valuenorm:
@@ -118,11 +118,11 @@ class R_MAPPO():
 
         # Reshape to do in a single forward pass for all steps
         values, action_log_probs, dist_entropy = self.policy.evaluate_actions(share_obs_batch,
-                                                                              obs_batch, 
-                                                                              rnn_states_batch, 
-                                                                              rnn_states_critic_batch, 
-                                                                              actions_batch, 
-                                                                              masks_batch, 
+                                                                              obs_batch,
+                                                                              rnn_states_batch,
+                                                                              rnn_states_critic_batch,
+                                                                              actions_batch,
+                                                                              masks_batch,
                                                                               available_actions_batch,
                                                                               active_masks_batch)
         # actor update
@@ -185,7 +185,7 @@ class R_MAPPO():
         mean_advantages = np.nanmean(advantages_copy)
         std_advantages = np.nanstd(advantages_copy)
         advantages = (advantages - mean_advantages) / (std_advantages + 1e-5)
-        
+
 
         train_info = {}
 
@@ -220,7 +220,7 @@ class R_MAPPO():
 
         for k in train_info.keys():
             train_info[k] /= num_updates
- 
+
         return train_info
 
     def prep_training(self):

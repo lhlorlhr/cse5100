@@ -50,7 +50,12 @@ class Runner(object):
         # dir
         self.model_dir = self.all_args.model_dir
 
-        if self.use_wandb:
+        if self.use_render:
+            self.run_dir = config["run_dir"]
+            self.gif_dir = str(self.run_dir / 'gifs')
+            if not os.path.exists(self.gif_dir):
+                os.makedirs(self.gif_dir)
+        elif self.use_wandb:
             self.save_dir = str(wandb.run.dir)
             self.run_dir = str(wandb.run.dir)
         else:
@@ -155,10 +160,10 @@ class Runner(object):
         if self.algorithm_name == "mat" or self.algorithm_name == "mat_dec":
             self.policy.restore(model_dir)
         else:
-            policy_actor_state_dict = torch.load(str(self.model_dir) + '/actor.pt')
+            policy_actor_state_dict = torch.load(str(self.model_dir) + '/actor.pt', weights_only=True)
             self.policy.actor.load_state_dict(policy_actor_state_dict)
             if not self.all_args.use_render:
-                policy_critic_state_dict = torch.load(str(self.model_dir) + '/critic.pt')
+                policy_critic_state_dict = torch.load(str(self.model_dir) + '/critic.pt', weights_only=True)
                 self.policy.critic.load_state_dict(policy_critic_state_dict)
 
     def log_train(self, train_infos, total_num_steps):

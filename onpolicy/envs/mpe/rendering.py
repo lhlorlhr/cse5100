@@ -28,6 +28,13 @@ import numpy as np
 
 RAD2DEG = 57.29577951308232
 
+def _safe_set_line_width(width):
+    """Set line width with fallback for drivers that reject widths > 1.0."""
+    try:
+        glLineWidth(float(width))
+    except Exception:
+        glLineWidth(1.0)
+
 def get_display(spec):
     """Convert a display specification (such as :0) into an actual Display
     object.
@@ -59,7 +66,7 @@ class Viewer(object):
         glEnable(GL_LINE_SMOOTH)
         # glHint(GL_LINE_SMOOTH_HINT, GL_DONT_CARE)
         glHint(GL_LINE_SMOOTH_HINT, GL_NICEST)
-        glLineWidth(2.0)
+        _safe_set_line_width(2.0)
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
 
     def close(self):
@@ -210,7 +217,7 @@ class LineWidth(Attr):
     def __init__(self, stroke):
         self.stroke = stroke
     def enable(self):
-        glLineWidth(self.stroke)
+        _safe_set_line_width(self.stroke)
 
 class Point(Geom):
     def __init__(self):
