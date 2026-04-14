@@ -16,7 +16,7 @@ class Scenario(BaseScenario):
         for i, agent in enumerate(world.agents):
             agent.name = 'agent %d' % i
             agent.collide = True
-            agent.silent = True
+            agent.silent = False
             agent.adversary = True if i < num_adversaries else False
             agent.size = 0.075 if agent.adversary else 0.05
             agent.accel = 3.0 if agent.adversary else 4.0
@@ -141,11 +141,14 @@ class Scenario(BaseScenario):
             other_pos.append(other.state.p_pos - agent.state.p_pos)
             if not other.adversary:
                 other_vel.append(other.state.p_vel)
-        obs = np.concatenate([agent.state.p_vel] + [agent.state.p_pos] + entity_pos + other_pos + other_vel)
+        obs = np.concatenate([agent.state.p_vel] + [agent.state.p_pos] + entity_pos + other_pos + other_vel + comm)
         # Pad to uniform obs size across all agents (adversaries observe good agent vel, good agent does not)
         num_adversaries = sum(1 for a in world.agents if a.adversary)
         num_good = sum(1 for a in world.agents if not a.adversary)
-        max_obs_size = 4 + 2 * len([e for e in world.landmarks if not e.boundary]) + 2 * (len(world.agents) - 1) + 2 * num_good
+        num_agents = len(world.agents)  #
+        comm_dim_total = (num_agents - 1) * world.dim_c #
+        max_obs_size = (4 + 2 * len([e for e in world.landmarks if not e.boundary]) #
+                + 2 * (len(world.agents) - 1) + 2 * num_good + comm_dim_total)
         if len(obs) < max_obs_size:
             obs = np.concatenate([obs, np.zeros(max_obs_size - len(obs))])
         return obs
