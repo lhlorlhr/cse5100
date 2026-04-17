@@ -8,6 +8,13 @@ import imageio
 def _t2n(x):
     return x.detach().cpu().numpy()
 
+def _compute_msg_entropy(symbols):
+    if len(symbols) == 0:
+        return 0.0
+    counts = np.bincount(np.asarray(symbols, dtype=np.int64))
+    probs = counts[counts > 0] / np.sum(counts)
+    return float(-np.sum(probs * np.log(probs + 1e-12)))
+
 class MPERunner(Runner):
     """Runner class to perform training, evaluation. and data collection for the MPEs. See parent class for details."""
     def __init__(self, config):
@@ -18,22 +25,47 @@ class MPERunner(Runner):
 
         start = time.time()
         episodes = int(self.num_env_steps) // self.episode_length // self.n_rollout_threads
+        window_capture_flags = []
+        window_first_capture_steps = []
 
         for episode in range(episodes):
             if self.use_linear_lr_decay:
                 self.trainer.policy.lr_decay(episode, episodes)
 
+            episode_comm_symbols = []
+            episode_comm_active = []
+            episode_comm_symbols_predator = []
+            episode_comm_active_predator = []
+            episode_capture_flags = np.zeros(self.n_rollout_threads, dtype=np.float32)
+            episode_first_capture_steps = np.ones(self.n_rollout_threads, dtype=np.float32) * self.episode_length
             for step in range(self.episode_length):
                 # Sample actions
                 values, actions, action_log_probs, rnn_states, rnn_states_critic, actions_env = self.collect(step)
                     
                 # Obser reward and next obs
                 obs, rewards, dones, infos = self.envs.step(actions_env)
+                for env_id, env_info in enumerate(infos):
+                    capture_step = env_info[0].get("capture_step", 0.0)
+                    if capture_step > 0.5 and episode_capture_flags[env_id] < 0.5:
+                        episode_capture_flags[env_id] = 1.0
+                        episode_first_capture_steps[env_id] = float(step + 1)
+                    for agent_info in env_info:
+                        msg_symbol = agent_info.get("comm_symbol", -1)
+                        if msg_symbol >= 0:
+                            episode_comm_symbols.append(msg_symbol)
+                            comm_active = agent_info.get("comm_active", 0.0)
+                            episode_comm_active.append(comm_active)
+                            if agent_info.get("is_adversary", 0.0) > 0.5:
+                                episode_comm_symbols_predator.append(msg_symbol)
+                                episode_comm_active_predator.append(comm_active)
 
                 data = obs, rewards, dones, infos, values, actions, action_log_probs, rnn_states, rnn_states_critic
 
                 # insert data into buffer
                 self.insert(data)
+
+            window_capture_flags.extend(episode_capture_flags.tolist())
+            window_first_capture_steps.extend(episode_first_capture_steps.tolist())
 
             # compute return and update network
             self.compute()
@@ -61,6 +93,8 @@ class MPERunner(Runner):
 
                 if self.env_name == "MPE":
                     env_infos = {}
+                    env_infos["capture_rate"] = window_capture_flags
+                    env_infos["time_to_first_capture"] = window_first_capture_steps
                     for agent_id in range(self.num_agents):
                         idv_rews = []
                         for info in infos:
@@ -68,11 +102,19 @@ class MPERunner(Runner):
                                 idv_rews.append(info[agent_id]['individual_reward'])
                         agent_k = 'agent%i/individual_rewards' % agent_id
                         env_infos[agent_k] = idv_rews
+                    if len(episode_comm_symbols) > 0:
+                        env_infos["comm/msg_usage_rate"] = [float(np.mean(episode_comm_active))]
+                        env_infos["comm/msg_entropy"] = [_compute_msg_entropy(episode_comm_symbols)]
+                    if len(episode_comm_symbols_predator) > 0:
+                        env_infos["comm/msg_usage_rate_predator"] = [float(np.mean(episode_comm_active_predator))]
+                        env_infos["comm/msg_entropy_predator"] = [_compute_msg_entropy(episode_comm_symbols_predator)]
 
                 train_infos["average_episode_rewards"] = np.mean(self.buffer.rewards) * self.episode_length
                 print("average episode rewards is {}".format(train_infos["average_episode_rewards"]))
                 self.log_train(train_infos, total_num_steps)
                 self.log_env(env_infos, total_num_steps)
+                window_capture_flags = []
+                window_first_capture_steps = []
 
             # eval
             if episode % self.eval_interval == 0 and self.use_eval:

@@ -43,6 +43,13 @@ def parse_args(args, parser):
                         default=1, help="number of good agents (for simple_tag)")
     parser.add_argument('--num_adversaries', type=int,
                         default=3, help="number of adversaries (for simple_tag)")
+    parser.add_argument("--use_simple_comm", action="store_true", default=False,
+                        help="Enable simple communication in simple_tag.")
+    parser.add_argument("--comm_dim", type=int, default=2,
+                        help="Communication channel size when use_simple_comm is enabled.")
+    parser.add_argument("--comm_target", type=str, default="all",
+                        choices=["all", "adversary", "good"],
+                        help="Which team is allowed to send communication messages.")
 
     all_args = parser.parse_known_args(args)[0]
 
@@ -69,6 +76,9 @@ def main(args):
 
     assert (all_args.share_policy == True and all_args.scenario_name == 'simple_speaker_listener') == False, (
         "The simple_speaker_listener scenario can not use shared policy. Please check the config.py.")
+    assert all_args.comm_dim > 0, "comm_dim must be positive."
+    if all_args.share_policy and all_args.use_simple_comm and all_args.comm_target != "all":
+        raise AssertionError("share_policy=True requires comm_target='all' so all agents have the same action space.")
 
     assert all_args.use_render, ("u need to set use_render be True")
     assert not (all_args.model_dir == None or all_args.model_dir == ""), ("set model_dir first")

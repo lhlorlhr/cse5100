@@ -6,7 +6,10 @@ class Scenario(BaseScenario):
     def make_world(self, args):
         world = World()
         # set any world properties first
-        world.dim_c = 2
+        use_simple_comm = getattr(args, "use_simple_comm", False)
+        comm_dim = getattr(args, "comm_dim", 2)
+        comm_target = getattr(args, "comm_target", "all")
+        world.dim_c = comm_dim
         num_good_agents = args.num_good_agents#1
         num_adversaries = args.num_adversaries#3
         num_agents = num_adversaries + num_good_agents
@@ -16,8 +19,17 @@ class Scenario(BaseScenario):
         for i, agent in enumerate(world.agents):
             agent.name = 'agent %d' % i
             agent.collide = True
-            agent.silent = True
             agent.adversary = True if i < num_adversaries else False
+            if not use_simple_comm:
+                agent.silent = True
+            elif comm_target == "all":
+                agent.silent = False
+            elif comm_target == "adversary":
+                agent.silent = not agent.adversary
+            elif comm_target == "good":
+                agent.silent = agent.adversary
+            else:
+                agent.silent = True
             agent.size = 0.075 if agent.adversary else 0.05
             agent.accel = 3.0 if agent.adversary else 4.0
             #agent.accel = 20.0 if agent.adversary else 25.0
@@ -125,27 +137,55 @@ class Scenario(BaseScenario):
                         rew += 10
         return rew
 
+    def info(self, agent, world):
+        info = {}
+        info["is_adversary"] = 1.0 if agent.adversary else 0.0
+        capture = False
+        for good in self.good_agents(world):
+            for adv in self.adversaries(world):
+                if self.is_collision(good, adv):
+                    capture = True
+                    break
+            if capture:
+                break
+        info["capture_step"] = 1.0 if capture else 0.0
+        if world.dim_c > 0 and not agent.silent and agent.state.c is not None and len(agent.state.c) > 0:
+            msg_symbol = int(np.argmax(agent.state.c))
+            info["comm_symbol"] = msg_symbol
+            # Convention: symbol 0 is treated as no-message for usage statistics.
+            info["comm_active"] = 1.0 if msg_symbol > 0 else 0.0
+        else:
+            info["comm_symbol"] = -1
+            info["comm_active"] = 0.0
+        return info
+
     def observation(self, agent, world):
         # get positions of all entities in this agent's reference frame
         entity_pos = []
         for entity in world.landmarks:
             if not entity.boundary:
                 entity_pos.append(entity.state.p_pos - agent.state.p_pos)
+        use_simple_comm = getattr(world, "dim_c", 0) > 0 and any(not a.silent for a in world.agents)
         # communication of all other agents
         comm = []
         other_pos = []
         other_vel = []
         for other in world.agents:
             if other is agent: continue
-            comm.append(other.state.c)
+            if use_simple_comm:
+                comm.append(other.state.c)
             other_pos.append(other.state.p_pos - agent.state.p_pos)
             if not other.adversary:
                 other_vel.append(other.state.p_vel)
-        obs = np.concatenate([agent.state.p_vel] + [agent.state.p_pos] + entity_pos + other_pos + other_vel)
+        obs_parts = [agent.state.p_vel, agent.state.p_pos] + entity_pos + other_pos + other_vel
+        if use_simple_comm:
+            obs_parts += comm
+        obs = np.concatenate(obs_parts)
         # Pad to uniform obs size across all agents (adversaries observe good agent vel, good agent does not)
         num_adversaries = sum(1 for a in world.agents if a.adversary)
         num_good = sum(1 for a in world.agents if not a.adversary)
-        max_obs_size = 4 + 2 * len([e for e in world.landmarks if not e.boundary]) + 2 * (len(world.agents) - 1) + 2 * num_good
+        comm_obs_size = world.dim_c * (len(world.agents) - 1) if use_simple_comm else 0
+        max_obs_size = 4 + 2 * len([e for e in world.landmarks if not e.boundary]) + 2 * (len(world.agents) - 1) + 2 * num_good + comm_obs_size
         if len(obs) < max_obs_size:
             obs = np.concatenate([obs, np.zeros(max_obs_size - len(obs))])
         return obs

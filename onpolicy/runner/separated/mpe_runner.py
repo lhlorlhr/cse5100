@@ -13,6 +13,13 @@ import imageio
 def _t2n(x):
     return x.detach().cpu().numpy()
 
+def _compute_msg_entropy(symbols):
+    if len(symbols) == 0:
+        return 0.0
+    counts = np.bincount(np.asarray(symbols, dtype=np.int64))
+    probs = counts[counts > 0] / np.sum(counts)
+    return float(-np.sum(probs * np.log(probs + 1e-12)))
+
 class MPERunner(Runner):
     def __init__(self, config):
         super(MPERunner, self).__init__(config)
@@ -22,23 +29,48 @@ class MPERunner(Runner):
 
         start = time.time()
         episodes = int(self.num_env_steps) // self.episode_length // self.n_rollout_threads
+        window_capture_flags = []
+        window_first_capture_steps = []
 
         for episode in range(episodes):
             if self.use_linear_lr_decay:
                 for agent_id in range(self.num_agents):
                     self.trainer[agent_id].policy.lr_decay(episode, episodes)
 
+            episode_comm_symbols = []
+            episode_comm_active = []
+            episode_comm_symbols_predator = []
+            episode_comm_active_predator = []
+            episode_capture_flags = np.zeros(self.n_rollout_threads, dtype=np.float32)
+            episode_first_capture_steps = np.ones(self.n_rollout_threads, dtype=np.float32) * self.episode_length
             for step in range(self.episode_length):
                 # Sample actions
                 values, actions, action_log_probs, rnn_states, rnn_states_critic, actions_env = self.collect(step)
                     
                 # Obser reward and next obs
                 obs, rewards, dones, infos = self.envs.step(actions_env)
+                for env_id, env_info in enumerate(infos):
+                    capture_step = env_info[0].get("capture_step", 0.0)
+                    if capture_step > 0.5 and episode_capture_flags[env_id] < 0.5:
+                        episode_capture_flags[env_id] = 1.0
+                        episode_first_capture_steps[env_id] = float(step + 1)
+                    for agent_info in env_info:
+                        msg_symbol = agent_info.get("comm_symbol", -1)
+                        if msg_symbol >= 0:
+                            episode_comm_symbols.append(msg_symbol)
+                            comm_active = agent_info.get("comm_active", 0.0)
+                            episode_comm_active.append(comm_active)
+                            if agent_info.get("is_adversary", 0.0) > 0.5:
+                                episode_comm_symbols_predator.append(msg_symbol)
+                                episode_comm_active_predator.append(comm_active)
 
                 data = obs, rewards, dones, infos, values, actions, action_log_probs, rnn_states, rnn_states_critic 
                 
                 # insert data into buffer
                 self.insert(data)
+
+            window_capture_flags.extend(episode_capture_flags.tolist())
+            window_first_capture_steps.extend(episode_first_capture_steps.tolist())
 
             # compute return and update network
             self.compute()
@@ -65,6 +97,9 @@ class MPERunner(Runner):
                                 int(total_num_steps / (end - start))))
 
                 if self.env_name == "MPE":
+                    env_infos = {}
+                    env_infos["capture_rate"] = window_capture_flags
+                    env_infos["time_to_first_capture"] = window_first_capture_steps
                     for agent_id in range(self.num_agents):
                         idv_rews = []
                         for info in infos:
@@ -73,7 +108,16 @@ class MPERunner(Runner):
                                     idv_rews.append(infos[count][agent_id].get('individual_reward', 0))
                         train_infos[agent_id].update({'individual_rewards': np.mean(idv_rews)})
                         train_infos[agent_id].update({"average_episode_rewards": np.mean(self.buffer[agent_id].rewards) * self.episode_length})
+                    if len(episode_comm_symbols) > 0:
+                        env_infos["comm/msg_usage_rate"] = [float(np.mean(episode_comm_active))]
+                        env_infos["comm/msg_entropy"] = [_compute_msg_entropy(episode_comm_symbols)]
+                    if len(episode_comm_symbols_predator) > 0:
+                        env_infos["comm/msg_usage_rate_predator"] = [float(np.mean(episode_comm_active_predator))]
+                        env_infos["comm/msg_entropy_predator"] = [_compute_msg_entropy(episode_comm_symbols_predator)]
+                    self.log_env(env_infos, total_num_steps)
                 self.log_train(train_infos, total_num_steps)
+                window_capture_flags = []
+                window_first_capture_steps = []
 
             # eval
             if episode % self.eval_interval == 0 and self.use_eval:
@@ -111,7 +155,6 @@ class MPERunner(Runner):
                                                             self.buffer[agent_id].rnn_states[step],
                                                             self.buffer[agent_id].rnn_states_critic[step],
                                                             self.buffer[agent_id].masks[step])
-            # [agents, envs, dim]
             values.append(_t2n(value))
             action = _t2n(action)
             # rearrange action
@@ -141,19 +184,16 @@ class MPERunner(Runner):
                 one_hot_action_env.append(temp_action_env[i])
             actions_env.append(one_hot_action_env)
 
-        values = np.array(values).transpose(1, 0, 2)
-        actions = np.array(actions).transpose(1, 0, 2)
-        action_log_probs = np.array(action_log_probs).transpose(1, 0, 2)
-        rnn_states = np.array(rnn_states).transpose(1, 0, 2, 3)
-        rnn_states_critic = np.array(rnn_states_critic).transpose(1, 0, 2, 3)
-
         return values, actions, action_log_probs, rnn_states, rnn_states_critic, actions_env
 
     def insert(self, data):
         obs, rewards, dones, infos, values, actions, action_log_probs, rnn_states, rnn_states_critic = data
 
-        rnn_states[dones == True] = np.zeros(((dones == True).sum(), self.recurrent_N, self.hidden_size), dtype=np.float32)
-        rnn_states_critic[dones == True] = np.zeros(((dones == True).sum(), self.recurrent_N, self.hidden_size), dtype=np.float32)
+        for agent_id in range(self.num_agents):
+            done_env_ids = np.where(dones[:, agent_id] == True)[0]
+            if len(done_env_ids) > 0:
+                rnn_states[agent_id][done_env_ids] = np.zeros((len(done_env_ids), self.recurrent_N, self.hidden_size), dtype=np.float32)
+                rnn_states_critic[agent_id][done_env_ids] = np.zeros((len(done_env_ids), self.recurrent_N, self.hidden_size), dtype=np.float32)
         masks = np.ones((self.n_rollout_threads, self.num_agents, 1), dtype=np.float32)
         masks[dones == True] = np.zeros(((dones == True).sum(), 1), dtype=np.float32)
 
@@ -168,11 +208,11 @@ class MPERunner(Runner):
 
             self.buffer[agent_id].insert(share_obs,
                                         np.array(list(obs[:, agent_id])),
-                                        rnn_states[:, agent_id],
-                                        rnn_states_critic[:, agent_id],
-                                        actions[:, agent_id],
-                                        action_log_probs[:, agent_id],
-                                        values[:, agent_id],
+                                        rnn_states[agent_id],
+                                        rnn_states_critic[agent_id],
+                                        actions[agent_id],
+                                        action_log_probs[agent_id],
+                                        values[agent_id],
                                         rewards[:, agent_id],
                                         masks[:, agent_id])
 
