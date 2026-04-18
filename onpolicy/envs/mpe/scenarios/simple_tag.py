@@ -95,6 +95,10 @@ class Scenario(BaseScenario):
             for a in adversaries:
                 if self.is_collision(a, agent):
                     rew -= 10
+        # penalty for collision （new）
+        for lm in world.landmarks:
+            if self.is_collision(agent, lm):
+                rew -= 1.0
 
         # agents are penalized for exiting the screen, so that they can be caught by the adversaries
         def bound(x):
@@ -112,7 +116,7 @@ class Scenario(BaseScenario):
     def adversary_reward(self, agent, world):
         # Adversaries are rewarded for collisions with agents
         rew = 0
-        shape = False #different from openai
+        shape = True #different from openai
         agents = self.good_agents(world)
         adversaries = self.adversaries(world)
         if shape:  # reward can optionally be shaped (decreased reward for increased distance from agents)
@@ -122,7 +126,22 @@ class Scenario(BaseScenario):
             for ag in agents:
                 for adv in adversaries:
                     if self.is_collision(ag, adv):
-                        rew += 10
+                        rew += 50.0
+        # penalty for collision （new）
+        for lm in world.landmarks:
+            if self.is_collision(agent, lm):
+                rew -= 1.0
+
+        def bound(x):
+            if x < 0.9:
+                return 0
+            if x < 1.0:
+                return (x - 0.9) * 10
+            return min(np.exp(2 * x - 2), 10)
+        for p in range(world.dim_p):
+            x = abs(agent.state.p_pos[p])
+            rew -= bound(x)
+
         return rew
 
     def observation(self, agent, world):
