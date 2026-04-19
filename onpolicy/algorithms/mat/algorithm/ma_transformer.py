@@ -124,6 +124,8 @@ class Encoder(nn.Module):
                                            init_(nn.Linear(state_dim, n_embd), activate=True), nn.GELU())
         self.obs_encoder = nn.Sequential(nn.LayerNorm(obs_dim),
                                          init_(nn.Linear(obs_dim, n_embd), activate=True), nn.GELU())
+        # Keep agent tokens distinguishable without introducing a latent bottleneck.
+        self.agent_id_emb = nn.Parameter(torch.zeros(1, n_agent, n_embd))
 
         self.ln = nn.LayerNorm(n_embd)
         self.blocks = nn.Sequential(*[EncodeBlock(n_embd, n_head, n_agent) for _ in range(n_block)])
@@ -140,6 +142,7 @@ class Encoder(nn.Module):
             obs_embeddings = self.obs_encoder(obs)
             x = obs_embeddings
 
+        x = x + self.agent_id_emb[:, :x.size(1), :]
         rep = self.blocks(self.ln(x))
         v_loc = self.head(rep)
 
@@ -188,6 +191,8 @@ class Decoder(nn.Module):
                 self.action_encoder = nn.Sequential(init_(nn.Linear(action_dim, n_embd), activate=True), nn.GELU())
             self.obs_encoder = nn.Sequential(nn.LayerNorm(obs_dim),
                                              init_(nn.Linear(obs_dim, n_embd), activate=True), nn.GELU())
+            # Agent ids help the decoder keep track of which token generated which action.
+            self.agent_id_emb = nn.Parameter(torch.zeros(1, n_agent, n_embd))
             self.ln = nn.LayerNorm(n_embd)
             self.blocks = nn.Sequential(*[DecodeBlock(n_embd, n_head, n_agent) for _ in range(n_block)])
             self.head = nn.Sequential(init_(nn.Linear(n_embd, n_embd), activate=True), nn.GELU(), nn.LayerNorm(n_embd),
@@ -213,7 +218,7 @@ class Decoder(nn.Module):
                 logit = torch.stack(logit, dim=1)
         else:
             action_embeddings = self.action_encoder(action)
-            x = self.ln(action_embeddings)
+            x = self.ln(action_embeddings + self.agent_id_emb[:, :action_embeddings.size(1), :])
             for block in self.blocks:
                 x = block(x, obs_rep)
             logit = self.head(x)
@@ -307,6 +312,5 @@ class MultiAgentTransformer(nn.Module):
         obs = check(obs).to(**self.tpdv)
         v_tot, obs_rep = self.encoder(state, obs)
         return v_tot
-
 
 
