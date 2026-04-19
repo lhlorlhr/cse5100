@@ -206,6 +206,12 @@ def get_config():
     parser.add_argument("--use_valuenorm", action='store_false', default=True, help="by default True, use running mean and std to normalize rewards.")
     parser.add_argument("--use_feature_normalization", action='store_false',
                         default=True, help="Whether to apply layernorm to the inputs")
+    parser.add_argument("--use_latent_embedding", action='store_true', default=False,
+                        help="Whether to add an extra latent encoder before the actor/critic base network.")
+    parser.add_argument("--latent_dim", type=int, default=64,
+                        help="Hidden size of the latent embedding layer.")
+    parser.add_argument("--latent_layer_N", type=int, default=1,
+                        help="Number of latent encoder hidden layers after the first projection.")
     parser.add_argument("--use_orthogonal", action='store_false', default=True,
                         help="Whether to use Orthogonal initialization for weights and 0 initialization for biases")
     parser.add_argument("--gain", type=float, default=0.01,

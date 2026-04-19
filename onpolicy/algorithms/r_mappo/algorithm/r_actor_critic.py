@@ -9,6 +9,43 @@ from onpolicy.algorithms.utils.popart import PopArt
 from onpolicy.utils.util import get_shape_from_obs_space
 
 
+class LatentMLP(nn.Module):
+    def __init__(self, args, input_dim, output_dim):
+        super(LatentMLP, self).__init__()
+        self._use_feature_normalization = args.use_feature_normalization
+        self._use_orthogonal = args.use_orthogonal
+        self._use_ReLU = args.use_ReLU
+        self._layer_N = args.latent_layer_N
+        self.hidden_size = output_dim
+
+        active_func = [nn.Tanh(), nn.ReLU()][self._use_ReLU]
+        init_method = [nn.init.xavier_uniform_, nn.init.orthogonal_][self._use_orthogonal]
+        gain = nn.init.calculate_gain(['tanh', 'relu'][self._use_ReLU])
+
+        def init_(m):
+            return init(m, init_method, lambda x: nn.init.constant_(x, 0), gain=gain)
+
+        if self._use_feature_normalization:
+            self.feature_norm = nn.LayerNorm(input_dim)
+        self.fc1 = nn.Sequential(
+            init_(nn.Linear(input_dim, self.hidden_size)), active_func, nn.LayerNorm(self.hidden_size))
+        self.fc2 = nn.ModuleList([
+            nn.Sequential(
+                init_(nn.Linear(self.hidden_size, self.hidden_size)),
+                active_func,
+                nn.LayerNorm(self.hidden_size)
+            ) for _ in range(self._layer_N)
+        ])
+
+    def forward(self, x):
+        if self._use_feature_normalization:
+            x = self.feature_norm(x)
+        x = self.fc1(x)
+        for i in range(self._layer_N):
+            x = self.fc2[i](x)
+        return x
+
+
 class R_Actor(nn.Module):
     """
     Actor network class for MAPPO. Outputs actions given observations.
@@ -27,11 +64,19 @@ class R_Actor(nn.Module):
         self._use_naive_recurrent_policy = args.use_naive_recurrent_policy
         self._use_recurrent_policy = args.use_recurrent_policy
         self._recurrent_N = args.recurrent_N
+        self._use_latent_embedding = args.use_latent_embedding
         self.tpdv = dict(dtype=torch.float32, device=device)
 
         obs_shape = get_shape_from_obs_space(obs_space)
         base = CNNBase if len(obs_shape) == 3 else MLPBase
-        self.base = base(args, obs_shape)
+        if self._use_latent_embedding:
+            self.latent_encoder = LatentMLP(args, obs_shape[0], args.latent_dim)
+            # The latent encoder replaces the raw observation, so the base should
+            # consume the latent vector directly.
+            self.base = base(args, (args.latent_dim,))
+        else:
+            self.latent_encoder = None
+            self.base = base(args, obs_shape)
 
         if self._use_naive_recurrent_policy or self._use_recurrent_policy:
             self.rnn = RNNLayer(self.hidden_size, self.hidden_size, self._recurrent_N, self._use_orthogonal)
@@ -60,6 +105,9 @@ class R_Actor(nn.Module):
         masks = check(masks).to(**self.tpdv)
         if available_actions is not None:
             available_actions = check(available_actions).to(**self.tpdv)
+
+        if self._use_latent_embedding:
+            obs = self.latent_encoder(obs)
 
         actor_features = self.base(obs)
 
@@ -93,6 +141,10 @@ class R_Actor(nn.Module):
 
         if active_masks is not None:
             active_masks = check(active_masks).to(**self.tpdv)
+
+        if self._use_latent_embedding:
+            latent_obs = self.latent_encoder(obs)
+            obs = torch.cat([obs, latent_obs], dim=-1)
 
         actor_features = self.base(obs)
 
@@ -133,12 +185,19 @@ class R_Critic(nn.Module):
         self._use_recurrent_policy = args.use_recurrent_policy
         self._recurrent_N = args.recurrent_N
         self._use_popart = args.use_popart
+        self._use_latent_embedding = args.use_latent_embedding
         self.tpdv = dict(dtype=torch.float32, device=device)
         init_method = [nn.init.xavier_uniform_, nn.init.orthogonal_][self._use_orthogonal]
 
         cent_obs_shape = get_shape_from_obs_space(cent_obs_space)
         base = CNNBase if len(cent_obs_shape) == 3 else MLPBase
-        self.base = base(args, cent_obs_shape)
+        if self._use_latent_embedding:
+            self.latent_encoder = LatentMLP(args, cent_obs_shape[0], args.latent_dim)
+            # Match the actor: the centralized latent encoder output is the base input.
+            self.base = base(args, (args.latent_dim,))
+        else:
+            self.latent_encoder = None
+            self.base = base(args, cent_obs_shape)
 
         if self._use_naive_recurrent_policy or self._use_recurrent_policy:
             self.rnn = RNNLayer(self.hidden_size, self.hidden_size, self._recurrent_N, self._use_orthogonal)
@@ -166,6 +225,9 @@ class R_Critic(nn.Module):
         cent_obs = check(cent_obs).to(**self.tpdv)
         rnn_states = check(rnn_states).to(**self.tpdv)
         masks = check(masks).to(**self.tpdv)
+
+        if self._use_latent_embedding:
+            cent_obs = self.latent_encoder(cent_obs)
 
         critic_features = self.base(cent_obs)
         if self._use_naive_recurrent_policy or self._use_recurrent_policy:

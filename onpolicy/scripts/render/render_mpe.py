@@ -4,6 +4,7 @@ import os
 import socket
 import numpy as np
 from pathlib import Path
+import re
 
 import torch
 try:
@@ -56,6 +57,70 @@ def parse_args(args, parser):
     return all_args
 
 
+def _actor_index(path: Path):
+    match = re.search(r"actor_agent(\d+)\.pt$", path.name)
+    return int(match.group(1)) if match else -1
+
+
+def _load_state_dict(path: Path):
+    try:
+        return torch.load(path, map_location="cpu", weights_only=True)
+    except TypeError:
+        return torch.load(path, map_location="cpu")
+
+
+def _infer_comm_target(speaker_flags, num_adversaries, num_agents):
+    if not speaker_flags:
+        return None
+    if all(speaker_flags):
+        return "all"
+    if len(speaker_flags) == num_agents:
+        if speaker_flags[:num_adversaries] == [True] * num_adversaries and speaker_flags[num_adversaries:] == [False] * (num_agents - num_adversaries):
+            return "adversary"
+        if speaker_flags[:num_adversaries] == [False] * num_adversaries and speaker_flags[num_adversaries:] == [True] * (num_agents - num_adversaries):
+            return "good"
+    return None
+
+
+def _infer_checkpoint_layout(all_args):
+    model_dir = Path(all_args.model_dir)
+    shared_actor = model_dir / "actor.pt"
+    separated_actor = model_dir / "actor_agent0.pt"
+
+    if shared_actor.exists():
+        all_args.share_policy = True
+        actor_paths = [shared_actor]
+    elif separated_actor.exists():
+        all_args.share_policy = False
+        actor_paths = sorted(model_dir.glob("actor_agent*.pt"), key=_actor_index)
+    else:
+        return all_args
+
+    state_dicts = [_load_state_dict(path) for path in actor_paths]
+    speaker_flags = [any(key.startswith("act.action_outs.") for key in state_dict.keys()) for state_dict in state_dicts]
+
+    if any(speaker_flags):
+        all_args.use_simple_comm = True
+        speaker_state_dict = next(state_dict for state_dict in state_dicts if any(key.startswith("act.action_outs.") for key in state_dict.keys()))
+        comm_head_key = "act.action_outs.1.linear.weight"
+        if comm_head_key in speaker_state_dict:
+            all_args.comm_dim = int(speaker_state_dict[comm_head_key].shape[0])
+        inferred_target = _infer_comm_target(speaker_flags, all_args.num_adversaries, all_args.num_agents)
+        if inferred_target is not None:
+            all_args.comm_target = inferred_target
+    else:
+        all_args.use_simple_comm = False
+
+    print(
+        "Detected checkpoint layout: "
+        f"{'shared' if all_args.share_policy else 'separated'}, "
+        f"use_simple_comm={all_args.use_simple_comm}, "
+        f"comm_dim={getattr(all_args, 'comm_dim', 'n/a')}, "
+        f"comm_target={getattr(all_args, 'comm_target', 'n/a')}"
+    )
+    return all_args
+
+
 def main(args):
     parser = get_config()
     all_args = parse_args(args, parser)
@@ -73,6 +138,8 @@ def main(args):
         all_args.use_centralized_V = False
     else:
         raise NotImplementedError
+
+    all_args = _infer_checkpoint_layout(all_args)
 
     assert (all_args.share_policy == True and all_args.scenario_name == 'simple_speaker_listener') == False, (
         "The simple_speaker_listener scenario can not use shared policy. Please check the config.py.")

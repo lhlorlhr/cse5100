@@ -165,6 +165,7 @@ class Scenario(BaseScenario):
         for entity in world.landmarks:
             if not entity.boundary:
                 entity_pos.append(entity.state.p_pos - agent.state.p_pos)
+        role_flag = np.array([1.0, 0.0]) if agent.adversary else np.array([0.0, 1.0])
         use_simple_comm = getattr(world, "dim_c", 0) > 0 and any(not a.silent for a in world.agents)
         # communication of all other agents
         comm = []
@@ -177,7 +178,7 @@ class Scenario(BaseScenario):
             other_pos.append(other.state.p_pos - agent.state.p_pos)
             if not other.adversary:
                 other_vel.append(other.state.p_vel)
-        obs_parts = [agent.state.p_vel, agent.state.p_pos] + entity_pos + other_pos + other_vel
+        obs_parts = [agent.state.p_vel, agent.state.p_pos, role_flag] + entity_pos + other_pos + other_vel
         if use_simple_comm:
             obs_parts += comm
         obs = np.concatenate(obs_parts)
@@ -185,7 +186,7 @@ class Scenario(BaseScenario):
         num_adversaries = sum(1 for a in world.agents if a.adversary)
         num_good = sum(1 for a in world.agents if not a.adversary)
         comm_obs_size = world.dim_c * (len(world.agents) - 1) if use_simple_comm else 0
-        max_obs_size = 4 + 2 * len([e for e in world.landmarks if not e.boundary]) + 2 * (len(world.agents) - 1) + 2 * num_good + comm_obs_size
+        max_obs_size = 6 + 2 * len([e for e in world.landmarks if not e.boundary]) + 2 * (len(world.agents) - 1) + 2 * num_good + comm_obs_size
         if len(obs) < max_obs_size:
             obs = np.concatenate([obs, np.zeros(max_obs_size - len(obs))])
         return obs
