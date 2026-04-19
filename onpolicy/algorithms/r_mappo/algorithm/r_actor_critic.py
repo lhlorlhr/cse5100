@@ -71,9 +71,8 @@ class R_Actor(nn.Module):
         base = CNNBase if len(obs_shape) == 3 else MLPBase
         if self._use_latent_embedding:
             self.latent_encoder = LatentMLP(args, obs_shape[0], args.latent_dim)
-            # The latent encoder replaces the raw observation, so the base should
-            # consume the latent vector directly.
-            self.base = base(args, (args.latent_dim,))
+            # Keep the raw observation and append the latent projection.
+            self.base = base(args, (obs_shape[0] + args.latent_dim,))
         else:
             self.latent_encoder = None
             self.base = base(args, obs_shape)
@@ -107,7 +106,8 @@ class R_Actor(nn.Module):
             available_actions = check(available_actions).to(**self.tpdv)
 
         if self._use_latent_embedding:
-            obs = self.latent_encoder(obs)
+            latent_obs = self.latent_encoder(obs)
+            obs = torch.cat([obs, latent_obs], dim=-1)
 
         actor_features = self.base(obs)
 
@@ -193,8 +193,7 @@ class R_Critic(nn.Module):
         base = CNNBase if len(cent_obs_shape) == 3 else MLPBase
         if self._use_latent_embedding:
             self.latent_encoder = LatentMLP(args, cent_obs_shape[0], args.latent_dim)
-            # Match the actor: the centralized latent encoder output is the base input.
-            self.base = base(args, (args.latent_dim,))
+            self.base = base(args, (cent_obs_shape[0] + args.latent_dim,))
         else:
             self.latent_encoder = None
             self.base = base(args, cent_obs_shape)
@@ -227,7 +226,8 @@ class R_Critic(nn.Module):
         masks = check(masks).to(**self.tpdv)
 
         if self._use_latent_embedding:
-            cent_obs = self.latent_encoder(cent_obs)
+            latent_cent_obs = self.latent_encoder(cent_obs)
+            cent_obs = torch.cat([cent_obs, latent_cent_obs], dim=-1)
 
         critic_features = self.base(cent_obs)
         if self._use_naive_recurrent_policy or self._use_recurrent_policy:
