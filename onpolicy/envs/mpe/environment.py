@@ -1,6 +1,9 @@
-import gym
-from gym import spaces
-from gym.envs.registration import EnvSpec
+try:
+    import gym
+    from gym import spaces
+except ModuleNotFoundError:
+    import gymnasium as gym
+    from gymnasium import spaces
 import numpy as np
 from .multi_discrete import MultiDiscrete
 
@@ -70,7 +73,8 @@ class MultiAgentEnv(gym.Env):
             # communication action space
             if not agent.silent:
                 if self.discrete_action_space:
-                    c_action_space = spaces.Discrete(world.dim_c)
+                    comm_action_dim = world.dim_c + 1 if getattr(world, "comm_has_null_action", False) else world.dim_c
+                    c_action_space = spaces.Discrete(comm_action_dim)
                 else:
                     c_action_space = spaces.Box(low=0.0, high=1.0, shape=(world.dim_c,), dtype=np.float32)  # [0,1]
                 total_action_space.append(c_action_space)
@@ -244,9 +248,24 @@ class MultiAgentEnv(gym.Env):
             # communication action
             if self.discrete_action_input:
                 agent.action.c = np.zeros(self.world.dim_c)
-                agent.action.c[action[0]] = 1.0
+                if getattr(self.world, "comm_has_null_action", False):
+                    if action[0] > 0:
+                        agent.action.c[action[0] - 1] = 1.0
+                else:
+                    agent.action.c[action[0]] = 1.0
             else:
-                agent.action.c = action[0]
+                if self.discrete_action_space and getattr(self.world, "comm_has_null_action", False):
+                    comm_action = np.asarray(action[0], dtype=np.float32)
+                    if comm_action.shape[0] != self.world.dim_c + 1:
+                        raise ValueError(
+                            f"Expected communication action of size {self.world.dim_c + 1}, got {comm_action.shape[0]}."
+                        )
+                    if comm_action[0] > 0.5:
+                        agent.action.c = np.zeros(self.world.dim_c, dtype=np.float32)
+                    else:
+                        agent.action.c = comm_action[1:]
+                else:
+                    agent.action.c = action[0]
 
             action = action[1:]
 

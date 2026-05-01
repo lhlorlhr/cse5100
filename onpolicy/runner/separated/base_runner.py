@@ -1,14 +1,17 @@
-
 import time
-import wandb
 import os
 import numpy as np
 from itertools import chain
 import torch
-from tensorboardX import SummaryWriter
+from onpolicy.utils.summary_writer import SummaryWriter
 
 from onpolicy.utils.separated_buffer import SeparatedReplayBuffer
 from onpolicy.utils.util import update_linear_schedule
+
+try:
+    import wandb
+except Exception:
+    wandb = None
 
 def _t2n(x):
     return x.detach().cpu().numpy()
@@ -37,6 +40,12 @@ class Runner(object):
         self.use_wandb = self.all_args.use_wandb
         self.use_render = self.all_args.use_render
         self.recurrent_N = self.all_args.recurrent_N
+
+        if self.use_wandb and wandb is None:
+            raise ImportError(
+                "W&B logging was requested with --use_wandb, but wandb could not be imported. "
+                "Fix the wandb installation or run without --use_wandb."
+            )
 
         # interval
         self.save_interval = self.all_args.save_interval

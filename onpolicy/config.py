@@ -182,6 +182,17 @@ def get_config():
     parser.add_argument("--env_name", type=str, default='StarCraft2', help="specify the name of environment")
     parser.add_argument("--use_obs_instead_of_state", action='store_true',
                         default=False, help="Whether to use global state or concatenated obs")
+    parser.add_argument("--use_simple_comm", action='store_true', default=False,
+                        help="Enable explicit communication actions for MPE scenarios that support it.")
+    parser.add_argument("--comm_dim", type=int, default=2,
+                        help="Communication channel dimension for MPE scenarios that support simple communication.")
+    parser.add_argument("--comm_target", type=str, default="all",
+                        choices=["all", "adversaries", "good_agents"],
+                        help="Which agents can communicate in MPE simple communication mode.")
+    parser.add_argument("--use_comm_l1_penalty", action='store_true', default=False,
+                        help="Apply a communication activity penalty during MPE training.")
+    parser.add_argument("--comm_l1_coef", type=float, default=0.0,
+                        help="Penalty coefficient for communication activity when --use_comm_l1_penalty is enabled.")
 
     # replay buffer parameters
     parser.add_argument("--episode_length", type=int,

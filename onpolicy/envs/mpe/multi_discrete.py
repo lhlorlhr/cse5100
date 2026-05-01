@@ -3,7 +3,10 @@
 
 import numpy as np
 
-import gym
+try:
+    import gym
+except ModuleNotFoundError:
+    import gymnasium as gym
 
 class MultiDiscrete(gym.Space):
     """

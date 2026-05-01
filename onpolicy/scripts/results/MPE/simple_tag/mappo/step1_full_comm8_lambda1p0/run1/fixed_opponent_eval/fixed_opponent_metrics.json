@@ -1,0 +1,1430 @@
+{
+  "algorithm_name": "mappo",
+  "scenario_name": "simple_tag",
+  "model_dir": "/Users/thunder/Documents/CSE5100/Final/barrier_problem_fix/onpolicy/scripts/results/MPE/simple_tag/mappo/step1_full_comm8_lambda1p0/run1/models",
+  "seed": 1,
+  "episode_length": 100,
+  "eval_episodes": 100,
+  "results": {
+    "random": {
+      "capture_rate": 1.0,
+      "mean_capture_step": 10.829999923706055,
+      "mean_capture_step_clipped": 10.829999923706055,
+      "mean_collision_steps": 31.729999542236328,
+      "mean_predator_return": 823.4170532226562,
+      "mean_prey_return": -674.6981201171875,
+      "episodes": [
+        {
+          "captured": true,
+          "capture_step": 3,
+          "collision_steps": 22,
+          "predator_return": 545.6966552734375,
+          "prey_return": -527.7273559570312
+        },
+        {
+          "captured": true,
+          "capture_step": 17,
+          "collision_steps": 14,
+          "predator_return": 319.6539001464844,
+          "prey_return": -741.8178100585938
+        },
+        {
+          "captured": true,
+          "capture_step": 18,
+          "collision_steps": 18,
+          "predator_return": 427.5330505371094,
+          "prey_return": -636.7095947265625
+        },
+        {
+          "captured": true,
+          "capture_step": 8,
+          "collision_steps": 37,
+          "predator_return": 971.4722290039062,
+          "prey_return": -526.774658203125
+        },
+        {
+          "captured": true,
+          "capture_step": 16,
+          "collision_steps": 41,
+          "predator_return": 1073.0357666015625,
+          "prey_return": -542.7777099609375
+        },
+        {
+          "captured": true,
+          "capture_step": 8,
+          "collision_steps": 34,
+          "predator_return": 783.205810546875,
+          "prey_return": -456.1578369140625
+        },
+        {
+          "captured": true,
+          "capture_step": 18,
+          "collision_steps": 34,
+          "predator_return": 906.0888061523438,
+          "prey_return": -491.0909423828125
+        },
+        {
+          "captured": true,
+          "capture_step": 15,
+          "collision_steps": 43,
+          "predator_return": 1050.9085693359375,
+          "prey_return": -499.65411376953125
+        },
+        {
+          "captured": true,
+          "capture_step": 5,
+          "collision_steps": 37,
+          "predator_return": 969.4801635742188,
+          "prey_return": -809.7098388671875
+        },
+        {
+          "captured": true,
+          "capture_step": 8,
+          "collision_steps": 39,
+          "predator_return": 1022.4452514648438,
+          "prey_return": -541.8692626953125
+        },
+        {
+          "captured": true,
+          "capture_step": 8,
+          "collision_steps": 29,
+          "predator_return": 712.9426879882812,
+          "prey_return": -748.6964111328125
+        },
+        {
+          "captured": true,
+          "capture_step": 37,
+          "collision_steps": 22,
+          "predator_return": 604.0792846679688,
+          "prey_return": -758.1622924804688
+        },
+        {
+          "captured": true,
+          "capture_step": 10,
+          "collision_steps": 23,
+          "predator_return": 591.2064819335938,
+          "prey_return": -1030.386474609375
+        },
+        {
+          "captured": true,
+          "capture_step": 11,
+          "collision_steps": 28,
+          "predator_return": 705.1082153320312,
+          "prey_return": -775.4808959960938
+        },
+        {
+          "captured": true,
+          "capture_step": 9,
+          "collision_steps": 25,
+          "predator_return": 604.40283203125,
+          "prey_return": -928.9246826171875
+        },
+        {
+          "captured": true,
+          "capture_step": 4,
+          "collision_steps": 18,
+          "predator_return": 408.8395080566406,
+          "prey_return": -1119.787109375
+        },
+        {
+          "captured": true,
+          "capture_step": 3,
+          "collision_steps": 26,
+          "predator_return": 619.9691162109375,
+          "prey_return": -936.2389526367188
+        },
+        {
+          "captured": true,
+          "capture_step": 9,
+          "collision_steps": 14,
+          "predator_return": 315.0276794433594,
+          "prey_return": -713.3560180664062
+        },
+        {
+          "captured": true,
+          "capture_step": 35,
+          "collision_steps": 17,
+          "predator_return": 486.830078125,
+          "prey_return": -998.5194091796875
+        },
+        {
+          "captured": true,
+          "capture_step": 6,
+          "collision_steps": 25,
+          "predator_return": 676.6906127929688,
+          "prey_return": -1031.8778076171875
+        },
+        {
+          "captured": true,
+          "capture_step": 5,
+          "collision_steps": 26,
+          "predator_return": 638.7611694335938,
+          "prey_return": -507.6791076660156
+        },
+        {
+          "captured": true,
+          "capture_step": 2,
+          "collision_steps": 31,
+          "predator_return": 810.353515625,
+          "prey_return": -626.7697143554688
+        },
+        {
+          "captured": true,
+          "capture_step": 9,
+          "collision_steps": 36,
+          "predator_return": 953.704833984375,
+          "prey_return": -501.99163818359375
+        },
+        {
+          "captured": true,
+          "capture_step": 16,
+          "collision_steps": 40,
+          "predator_return": 1109.945068359375,
+          "prey_return": -999.7039794921875
+        },
+        {
+          "captured": true,
+          "capture_step": 4,
+          "collision_steps": 41,
+          "predator_return": 1008.2727661132812,
+          "prey_return": -478.1834411621094
+        },
+        {
+          "captured": true,
+          "capture_step": 18,
+          "collision_steps": 29,
+          "predator_return": 706.67138671875,
+          "prey_return": -379.19683837890625
+        },
+        {
+          "captured": true,
+          "capture_step": 13,
+          "collision_steps": 36,
+          "predator_return": 965.6835327148438,
+          "prey_return": -454.1544494628906
+        },
+        {
+          "captured": true,
+          "capture_step": 18,
+          "collision_steps": 30,
+          "predator_return": 834.6780395507812,
+          "prey_return": -679.2376098632812
+        },
+        {
+          "captured": true,
+          "capture_step": 12,
+          "collision_steps": 34,
+          "predator_return": 871.2980346679688,
+          "prey_return": -441.9621887207031
+        },
+        {
+          "captured": true,
+          "capture_step": 4,
+          "collision_steps": 31,
+          "predator_return": 1010.2647094726562,
+          "prey_return": -1137.0838623046875
+        },
+        {
+          "captured": true,
+          "capture_step": 17,
+          "collision_steps": 41,
+          "predator_return": 1189.5416259765625,
+          "prey_return": -709.5647583007812
+        },
+        {
+          "captured": true,
+          "capture_step": 36,
+          "collision_steps": 21,
+          "predator_return": 544.3152465820312,
+          "prey_return": -1001.1340942382812
+        },
+        {
+          "captured": true,
+          "capture_step": 26,
+          "collision_steps": 27,
+          "predator_return": 823.1298828125,
+          "prey_return": -865.9830932617188
+        },
+        {
+          "captured": true,
+          "capture_step": 15,
+          "collision_steps": 25,
+          "predator_return": 632.5656127929688,
+          "prey_return": -600.7861938476562
+        },
+        {
+          "captured": true,
+          "capture_step": 4,
+          "collision_steps": 34,
+          "predator_return": 805.2036743164062,
+          "prey_return": -638.04443359375
+        },
+        {
+          "captured": true,
+          "capture_step": 10,
+          "collision_steps": 38,
+          "predator_return": 992.9364624023438,
+          "prey_return": -773.6055908203125
+        },
+        {
+          "captured": true,
+          "capture_step": 4,
+          "collision_steps": 18,
+          "predator_return": 492.8064880371094,
+          "prey_return": -601.05078125
+        },
+        {
+          "captured": true,
+          "capture_step": 7,
+          "collision_steps": 38,
+          "predator_return": 957.42724609375,
+          "prey_return": -644.631103515625
+        },
+        {
+          "captured": true,
+          "capture_step": 7,
+          "collision_steps": 10,
+          "predator_return": 306.16424560546875,
+          "prey_return": -840.0828857421875
+        },
+        {
+          "captured": true,
+          "capture_step": 3,
+          "collision_steps": 40,
+          "predator_return": 1029.7353515625,
+          "prey_return": -548.6795043945312
+        },
+        {
+          "captured": true,
+          "capture_step": 1,
+          "collision_steps": 31,
+          "predator_return": 775.1585083007812,
+          "prey_return": -1134.3271484375
+        },
+        {
+          "captured": true,
+          "capture_step": 9,
+          "collision_steps": 13,
+          "predator_return": 313.1307678222656,
+          "prey_return": -957.177490234375
+        },
+        {
+          "captured": true,
+          "capture_step": 9,
+          "collision_steps": 34,
+          "predator_return": 840.7120971679688,
+          "prey_return": -426.261962890625
+        },
+        {
+          "captured": true,
+          "capture_step": 3,
+          "collision_steps": 36,
+          "predator_return": 917.0194702148438,
+          "prey_return": -627.2403564453125
+        },
+        {
+          "captured": true,
+          "capture_step": 7,
+          "collision_steps": 42,
+          "predator_return": 1033.9820556640625,
+          "prey_return": -695.77490234375
+        },
+        {
+          "captured": true,
+          "capture_step": 17,
+          "collision_steps": 21,
+          "predator_return": 521.2936401367188,
+          "prey_return": -724.57080078125
+        },
+        {
+          "captured": true,
+          "capture_step": 1,
+          "collision_steps": 32,
+          "predator_return": 879.8613891601562,
+          "prey_return": -542.9183959960938
+        },
+        {
+          "captured": true,
+          "capture_step": 2,
+          "collision_steps": 33,
+          "predator_return": 894.2880859375,
+          "prey_return": -588.1693115234375
+        },
+        {
+          "captured": true,
+          "capture_step": 5,
+          "collision_steps": 42,
+          "predator_return": 1136.7042236328125,
+          "prey_return": -551.0343017578125
+        },
+        {
+          "captured": true,
+          "capture_step": 4,
+          "collision_steps": 17,
+          "predator_return": 484.2369079589844,
+          "prey_return": -1288.26025390625
+        },
+        {
+          "captured": true,
+          "capture_step": 15,
+          "collision_steps": 29,
+          "predator_return": 704.8670043945312,
+          "prey_return": -764.5426025390625
+        },
+        {
+          "captured": true,
+          "capture_step": 5,
+          "collision_steps": 32,
+          "predator_return": 777.6495971679688,
+          "prey_return": -452.1141357421875
+        },
+        {
+          "captured": true,
+          "capture_step": 5,
+          "collision_steps": 56,
+          "predator_return": 1399.7291259765625,
+          "prey_return": -615.0
+        },
+        {
+          "captured": true,
+          "capture_step": 16,
+          "collision_steps": 25,
+          "predator_return": 658.3742065429688,
+          "prey_return": -483.9273376464844
+        },
+        {
+          "captured": true,
+          "capture_step": 14,
+          "collision_steps": 30,
+          "predator_return": 788.39697265625,
+          "prey_return": -529.01416015625
+        },
+        {
+          "captured": true,
+          "capture_step": 11,
+          "collision_steps": 45,
+          "predator_return": 1210.4595947265625,
+          "prey_return": -564.1458740234375
+        },
+        {
+          "captured": true,
+          "capture_step": 5,
+          "collision_steps": 34,
+          "predator_return": 846.060302734375,
+          "prey_return": -743.9585571289062
+        },
+        {
+          "captured": true,
+          "capture_step": 4,
+          "collision_steps": 31,
+          "predator_return": 755.8401489257812,
+          "prey_return": -636.6997680664062
+        },
+        {
+          "captured": true,
+          "capture_step": 15,
+          "collision_steps": 35,
+          "predator_return": 885.3958129882812,
+          "prey_return": -440.1610412597656
+        },
+        {
+          "captured": true,
+          "capture_step": 28,
+          "collision_steps": 20,
+          "predator_return": 501.880859375,
+          "prey_return": -835.1270751953125
+        },
+        {
+          "captured": true,
+          "capture_step": 11,
+          "collision_steps": 32,
+          "predator_return": 843.3212890625,
+          "prey_return": -440.6302185058594
+        },
+        {
+          "captured": true,
+          "capture_step": 7,
+          "collision_steps": 35,
+          "predator_return": 964.9821166992188,
+          "prey_return": -542.7106323242188
+        },
+        {
+          "captured": true,
+          "capture_step": 1,
+          "collision_steps": 25,
+          "predator_return": 710.560546875,
+          "prey_return": -459.2541809082031
+        },
+        {
+          "captured": true,
+          "capture_step": 2,
+          "collision_steps": 43,
+          "predator_return": 1137.3570556640625,
+          "prey_return": -560.6051025390625
+        },
+        {
+          "captured": true,
+          "capture_step": 24,
+          "collision_steps": 36,
+          "predator_return": 1046.21142578125,
+          "prey_return": -520.3330078125
+        },
+        {
+          "captured": true,
+          "capture_step": 5,
+          "collision_steps": 27,
+          "predator_return": 612.270751953125,
+          "prey_return": -521.9456176757812
+        },
+        {
+          "captured": true,
+          "capture_step": 15,
+          "collision_steps": 25,
+          "predator_return": 599.5694580078125,
+          "prey_return": -987.97119140625
+        },
+        {
+          "captured": true,
+          "capture_step": 7,
+          "collision_steps": 32,
+          "predator_return": 823.3084106445312,
+          "prey_return": -847.5674438476562
+        },
+        {
+          "captured": true,
+          "capture_step": 12,
+          "collision_steps": 38,
+          "predator_return": 1040.294921875,
+          "prey_return": -580.684326171875
+        },
+        {
+          "captured": true,
+          "capture_step": 8,
+          "collision_steps": 34,
+          "predator_return": 805.177490234375,
+          "prey_return": -734.0614624023438
+        },
+        {
+          "captured": true,
+          "capture_step": 5,
+          "collision_steps": 20,
+          "predator_return": 540.7250366210938,
+          "prey_return": -938.9525756835938
+        },
+        {
+          "captured": true,
+          "capture_step": 13,
+          "collision_steps": 36,
+          "predator_return": 996.9552612304688,
+          "prey_return": -462.9454650878906
+        },
+        {
+          "captured": true,
+          "capture_step": 10,
+          "collision_steps": 34,
+          "predator_return": 939.788818359375,
+          "prey_return": -552.2861938476562
+        },
+        {
+          "captured": true,
+          "capture_step": 9,
+          "collision_steps": 29,
+          "predator_return": 808.9177856445312,
+          "prey_return": -1090.449951171875
+        },
+        {
+          "captured": true,
+          "capture_step": 13,
+          "collision_steps": 37,
+          "predator_return": 959.584228515625,
+          "prey_return": -766.3722534179688
+        },
+        {
+          "captured": true,
+          "capture_step": 8,
+          "collision_steps": 34,
+          "predator_return": 843.5950317382812,
+          "prey_return": -408.7644958496094
+        },
+        {
+          "captured": true,
+          "capture_step": 8,
+          "collision_steps": 46,
+          "predator_return": 1144.3135986328125,
+          "prey_return": -511.5600280761719
+        },
+        {
+          "captured": true,
+          "capture_step": 45,
+          "collision_steps": 24,
+          "predator_return": 595.1880493164062,
+          "prey_return": -751.7280883789062
+        },
+        {
+          "captured": true,
+          "capture_step": 12,
+          "collision_steps": 40,
+          "predator_return": 1036.5272216796875,
+          "prey_return": -547.88720703125
+        },
+        {
+          "captured": true,
+          "capture_step": 8,
+          "collision_steps": 40,
+          "predator_return": 987.5696411132812,
+          "prey_return": -453.53131103515625
+        },
+        {
+          "captured": true,
+          "capture_step": 6,
+          "collision_steps": 32,
+          "predator_return": 861.068603515625,
+          "prey_return": -731.3848876953125
+        },
+        {
+          "captured": true,
+          "capture_step": 21,
+          "collision_steps": 8,
+          "predator_return": 201.3291778564453,
+          "prey_return": -1020.9129638671875
+        },
+        {
+          "captured": true,
+          "capture_step": 4,
+          "collision_steps": 45,
+          "predator_return": 1147.2447509765625,
+          "prey_return": -529.8923950195312
+        },
+        {
+          "captured": true,
+          "capture_step": 27,
+          "collision_steps": 25,
+          "predator_return": 658.3165893554688,
+          "prey_return": -955.0422973632812
+        },
+        {
+          "captured": true,
+          "capture_step": 5,
+          "collision_steps": 28,
+          "predator_return": 689.0359497070312,
+          "prey_return": -481.83709716796875
+        },
+        {
+          "captured": true,
+          "capture_step": 9,
+          "collision_steps": 48,
+          "predator_return": 1327.0787353515625,
+          "prey_return": -604.269287109375
+        },
+        {
+          "captured": true,
+          "capture_step": 4,
+          "collision_steps": 47,
+          "predator_return": 1133.2650146484375,
+          "prey_return": -529.4760131835938
+        },
+        {
+          "captured": true,
+          "capture_step": 7,
+          "collision_steps": 35,
+          "predator_return": 894.0293579101562,
+          "prey_return": -571.8426513671875
+        },
+        {
+          "captured": true,
+          "capture_step": 15,
+          "collision_steps": 42,
+          "predator_return": 983.2734985351562,
+          "prey_return": -446.0
+        },
+        {
+          "captured": true,
+          "capture_step": 15,
+          "collision_steps": 38,
+          "predator_return": 891.915771484375,
+          "prey_return": -722.7362060546875
+        },
+        {
+          "captured": true,
+          "capture_step": 13,
+          "collision_steps": 30,
+          "predator_return": 772.8703002929688,
+          "prey_return": -532.8461303710938
+        },
+        {
+          "captured": true,
+          "capture_step": 6,
+          "collision_steps": 35,
+          "predator_return": 928.7797241210938,
+          "prey_return": -445.9216003417969
+        },
+        {
+          "captured": true,
+          "capture_step": 12,
+          "collision_steps": 33,
+          "predator_return": 925.0103149414062,
+          "prey_return": -774.3534545898438
+        },
+        {
+          "captured": true,
+          "capture_step": 4,
+          "collision_steps": 42,
+          "predator_return": 1077.013916015625,
+          "prey_return": -816.3020629882812
+        },
+        {
+          "captured": true,
+          "capture_step": 4,
+          "collision_steps": 42,
+          "predator_return": 1092.4019775390625,
+          "prey_return": -617.294677734375
+        },
+        {
+          "captured": true,
+          "capture_step": 25,
+          "collision_steps": 32,
+          "predator_return": 900.52880859375,
+          "prey_return": -706.052734375
+        },
+        {
+          "captured": true,
+          "capture_step": 4,
+          "collision_steps": 35,
+          "predator_return": 1033.2041015625,
+          "prey_return": -845.642822265625
+        },
+        {
+          "captured": true,
+          "capture_step": 5,
+          "collision_steps": 37,
+          "predator_return": 973.5492553710938,
+          "prey_return": -489.5728454589844
+        },
+        {
+          "captured": true,
+          "capture_step": 14,
+          "collision_steps": 34,
+          "predator_return": 904.7521362304688,
+          "prey_return": -495.02392578125
+        },
+        {
+          "captured": true,
+          "capture_step": 6,
+          "collision_steps": 28,
+          "predator_return": 707.70703125,
+          "prey_return": -627.4978637695312
+        }
+      ]
+    },
+    "heuristic": {
+      "capture_rate": 1.0,
+      "mean_capture_step": 3.5899999141693115,
+      "mean_capture_step_clipped": 3.5899999141693115,
+      "mean_collision_steps": 88.18000030517578,
+      "mean_predator_return": 2382.686279296875,
+      "mean_prey_return": -1089.0836181640625,
+      "episodes": [
+        {
+          "captured": true,
+          "capture_step": 2,
+          "collision_steps": 91,
+          "predator_return": 2428.133056640625,
+          "prey_return": -1076.77978515625
+        },
+        {
+          "captured": true,
+          "capture_step": 4,
+          "collision_steps": 87,
+          "predator_return": 2373.682861328125,
+          "prey_return": -1076.757568359375
+        },
+        {
+          "captured": true,
+          "capture_step": 3,
+          "collision_steps": 91,
+          "predator_return": 2492.566162109375,
+          "prey_return": -1109.439453125
+        },
+        {
+          "captured": true,
+          "capture_step": 6,
+          "collision_steps": 86,
+          "predator_return": 2138.309814453125,
+          "prey_return": -1037.4599609375
+        },
+        {
+          "captured": true,
+          "capture_step": 3,
+          "collision_steps": 87,
+          "predator_return": 2233.676513671875,
+          "prey_return": -1001.97021484375
+        },
+        {
+          "captured": true,
+          "capture_step": 4,
+          "collision_steps": 81,
+          "predator_return": 2022.9483642578125,
+          "prey_return": -1046.7305908203125
+        },
+        {
+          "captured": true,
+          "capture_step": 6,
+          "collision_steps": 87,
+          "predator_return": 2440.22265625,
+          "prey_return": -1121.8349609375
+        },
+        {
+          "captured": true,
+          "capture_step": 5,
+          "collision_steps": 85,
+          "predator_return": 2194.724365234375,
+          "prey_return": -983.3438720703125
+        },
+        {
+          "captured": true,
+          "capture_step": 1,
+          "collision_steps": 93,
+          "predator_return": 2538.94384765625,
+          "prey_return": -1124.0
+        },
+        {
+          "captured": true,
+          "capture_step": 4,
+          "collision_steps": 91,
+          "predator_return": 2460.928466796875,
+          "prey_return": -1081.0
+        },
+        {
+          "captured": true,
+          "capture_step": 4,
+          "collision_steps": 85,
+          "predator_return": 2439.781982421875,
+          "prey_return": -1081.0
+        },
+        {
+          "captured": true,
+          "capture_step": 9,
+          "collision_steps": 81,
+          "predator_return": 2210.482421875,
+          "prey_return": -994.2355346679688
+        },
+        {
+          "captured": true,
+          "capture_step": 3,
+          "collision_steps": 92,
+          "predator_return": 2613.50390625,
+          "prey_return": -1188.5701904296875
+        },
+        {
+          "captured": true,
+          "capture_step": 4,
+          "collision_steps": 78,
+          "predator_return": 2028.8846435546875,
+          "prey_return": -1089.903564453125
+        },
+        {
+          "captured": true,
+          "capture_step": 2,
+          "collision_steps": 89,
+          "predator_return": 2419.232177734375,
+          "prey_return": -1103.4268798828125
+        },
+        {
+          "captured": true,
+          "capture_step": 2,
+          "collision_steps": 91,
+          "predator_return": 2546.205078125,
+          "prey_return": -1196.0885009765625
+        },
+        {
+          "captured": true,
+          "capture_step": 2,
+          "collision_steps": 90,
+          "predator_return": 2394.0244140625,
+          "prey_return": -1051.32958984375
+        },
+        {
+          "captured": true,
+          "capture_step": 3,
+          "collision_steps": 87,
+          "predator_return": 2312.515869140625,
+          "prey_return": -1046.97900390625
+        },
+        {
+          "captured": true,
+          "capture_step": 5,
+          "collision_steps": 84,
+          "predator_return": 2363.883544921875,
+          "prey_return": -1058.0
+        },
+        {
+          "captured": true,
+          "capture_step": 4,
+          "collision_steps": 87,
+          "predator_return": 2359.296142578125,
+          "prey_return": -1090.818115234375
+        },
+        {
+          "captured": true,
+          "capture_step": 4,
+          "collision_steps": 88,
+          "predator_return": 2268.201904296875,
+          "prey_return": -1051.4207763671875
+        },
+        {
+          "captured": true,
+          "capture_step": 2,
+          "collision_steps": 89,
+          "predator_return": 2567.734375,
+          "prey_return": -1152.2386474609375
+        },
+        {
+          "captured": true,
+          "capture_step": 3,
+          "collision_steps": 91,
+          "predator_return": 2452.431884765625,
+          "prey_return": -1092.8095703125
+        },
+        {
+          "captured": true,
+          "capture_step": 1,
+          "collision_steps": 93,
+          "predator_return": 2502.0908203125,
+          "prey_return": -1181.0511474609375
+        },
+        {
+          "captured": true,
+          "capture_step": 3,
+          "collision_steps": 84,
+          "predator_return": 2243.88525390625,
+          "prey_return": -996.0
+        },
+        {
+          "captured": true,
+          "capture_step": 1,
+          "collision_steps": 89,
+          "predator_return": 2523.312744140625,
+          "prey_return": -1133.61767578125
+        },
+        {
+          "captured": true,
+          "capture_step": 9,
+          "collision_steps": 80,
+          "predator_return": 2071.480224609375,
+          "prey_return": -934.283935546875
+        },
+        {
+          "captured": true,
+          "capture_step": 4,
+          "collision_steps": 80,
+          "predator_return": 2102.007568359375,
+          "prey_return": -921.4230346679688
+        },
+        {
+          "captured": true,
+          "capture_step": 4,
+          "collision_steps": 89,
+          "predator_return": 2334.549072265625,
+          "prey_return": -1045.0
+        },
+        {
+          "captured": true,
+          "capture_step": 1,
+          "collision_steps": 93,
+          "predator_return": 2532.505859375,
+          "prey_return": -1137.8349609375
+        },
+        {
+          "captured": true,
+          "capture_step": 10,
+          "collision_steps": 88,
+          "predator_return": 2362.742431640625,
+          "prey_return": -1098.645263671875
+        },
+        {
+          "captured": true,
+          "capture_step": 4,
+          "collision_steps": 90,
+          "predator_return": 2501.919921875,
+          "prey_return": -1123.5457763671875
+        },
+        {
+          "captured": true,
+          "capture_step": 5,
+          "collision_steps": 87,
+          "predator_return": 2377.046630859375,
+          "prey_return": -1107.65625
+        },
+        {
+          "captured": true,
+          "capture_step": 7,
+          "collision_steps": 82,
+          "predator_return": 2059.027099609375,
+          "prey_return": -906.838134765625
+        },
+        {
+          "captured": true,
+          "capture_step": 4,
+          "collision_steps": 87,
+          "predator_return": 2345.720947265625,
+          "prey_return": -1058.322509765625
+        },
+        {
+          "captured": true,
+          "capture_step": 6,
+          "collision_steps": 90,
+          "predator_return": 2464.805908203125,
+          "prey_return": -1095.0
+        },
+        {
+          "captured": true,
+          "capture_step": 2,
+          "collision_steps": 92,
+          "predator_return": 2540.909423828125,
+          "prey_return": -1363.92578125
+        },
+        {
+          "captured": true,
+          "capture_step": 5,
+          "collision_steps": 87,
+          "predator_return": 2241.289306640625,
+          "prey_return": -1001.9446411132812
+        },
+        {
+          "captured": true,
+          "capture_step": 1,
+          "collision_steps": 91,
+          "predator_return": 2356.7275390625,
+          "prey_return": -1034.3475341796875
+        },
+        {
+          "captured": true,
+          "capture_step": 3,
+          "collision_steps": 88,
+          "predator_return": 2268.173583984375,
+          "prey_return": -1016.5848999023438
+        },
+        {
+          "captured": true,
+          "capture_step": 2,
+          "collision_steps": 93,
+          "predator_return": 2480.994384765625,
+          "prey_return": -1132.87939453125
+        },
+        {
+          "captured": true,
+          "capture_step": 5,
+          "collision_steps": 87,
+          "predator_return": 2213.814453125,
+          "prey_return": -984.9728393554688
+        },
+        {
+          "captured": true,
+          "capture_step": 6,
+          "collision_steps": 85,
+          "predator_return": 2288.918212890625,
+          "prey_return": -1054.9547119140625
+        },
+        {
+          "captured": true,
+          "capture_step": 2,
+          "collision_steps": 87,
+          "predator_return": 2337.576416015625,
+          "prey_return": -1042.0489501953125
+        },
+        {
+          "captured": true,
+          "capture_step": 2,
+          "collision_steps": 90,
+          "predator_return": 2315.9697265625,
+          "prey_return": -1037.3682861328125
+        },
+        {
+          "captured": true,
+          "capture_step": 4,
+          "collision_steps": 88,
+          "predator_return": 2461.492919921875,
+          "prey_return": -1143.8895263671875
+        },
+        {
+          "captured": true,
+          "capture_step": 1,
+          "collision_steps": 92,
+          "predator_return": 2519.430908203125,
+          "prey_return": -1136.92724609375
+        },
+        {
+          "captured": true,
+          "capture_step": 2,
+          "collision_steps": 90,
+          "predator_return": 2585.3828125,
+          "prey_return": -1159.4266357421875
+        },
+        {
+          "captured": true,
+          "capture_step": 2,
+          "collision_steps": 92,
+          "predator_return": 2501.318359375,
+          "prey_return": -1102.26953125
+        },
+        {
+          "captured": true,
+          "capture_step": 2,
+          "collision_steps": 91,
+          "predator_return": 2469.4599609375,
+          "prey_return": -1103.4791259765625
+        },
+        {
+          "captured": true,
+          "capture_step": 3,
+          "collision_steps": 82,
+          "predator_return": 2217.46875,
+          "prey_return": -986.0
+        },
+        {
+          "captured": true,
+          "capture_step": 4,
+          "collision_steps": 86,
+          "predator_return": 2357.897705078125,
+          "prey_return": -1113.4559326171875
+        },
+        {
+          "captured": true,
+          "capture_step": 3,
+          "collision_steps": 87,
+          "predator_return": 2318.044677734375,
+          "prey_return": -1044.56005859375
+        },
+        {
+          "captured": true,
+          "capture_step": 7,
+          "collision_steps": 84,
+          "predator_return": 2270.1240234375,
+          "prey_return": -1127.651611328125
+        },
+        {
+          "captured": true,
+          "capture_step": 4,
+          "collision_steps": 86,
+          "predator_return": 2319.16796875,
+          "prey_return": -1062.9967041015625
+        },
+        {
+          "captured": true,
+          "capture_step": 4,
+          "collision_steps": 94,
+          "predator_return": 2625.270751953125,
+          "prey_return": -1177.6422119140625
+        },
+        {
+          "captured": true,
+          "capture_step": 4,
+          "collision_steps": 89,
+          "predator_return": 2444.6904296875,
+          "prey_return": -1083.0
+        },
+        {
+          "captured": true,
+          "capture_step": 1,
+          "collision_steps": 95,
+          "predator_return": 2685.888916015625,
+          "prey_return": -1199.11279296875
+        },
+        {
+          "captured": true,
+          "capture_step": 5,
+          "collision_steps": 87,
+          "predator_return": 2251.354736328125,
+          "prey_return": -1011.7601318359375
+        },
+        {
+          "captured": true,
+          "capture_step": 2,
+          "collision_steps": 87,
+          "predator_return": 2516.845458984375,
+          "prey_return": -1140.9072265625
+        },
+        {
+          "captured": true,
+          "capture_step": 1,
+          "collision_steps": 89,
+          "predator_return": 2635.906982421875,
+          "prey_return": -1187.0
+        },
+        {
+          "captured": true,
+          "capture_step": 5,
+          "collision_steps": 88,
+          "predator_return": 2440.8056640625,
+          "prey_return": -1108.51953125
+        },
+        {
+          "captured": true,
+          "capture_step": 1,
+          "collision_steps": 88,
+          "predator_return": 2498.622802734375,
+          "prey_return": -1164.18896484375
+        },
+        {
+          "captured": true,
+          "capture_step": 1,
+          "collision_steps": 88,
+          "predator_return": 2529.140869140625,
+          "prey_return": -1144.2845458984375
+        },
+        {
+          "captured": true,
+          "capture_step": 7,
+          "collision_steps": 89,
+          "predator_return": 2416.545654296875,
+          "prey_return": -1078.0
+        },
+        {
+          "captured": true,
+          "capture_step": 4,
+          "collision_steps": 86,
+          "predator_return": 2196.01904296875,
+          "prey_return": -1105.36962890625
+        },
+        {
+          "captured": true,
+          "capture_step": 3,
+          "collision_steps": 83,
+          "predator_return": 2262.46533203125,
+          "prey_return": -1041.859130859375
+        },
+        {
+          "captured": true,
+          "capture_step": 2,
+          "collision_steps": 89,
+          "predator_return": 2554.6611328125,
+          "prey_return": -1298.9423828125
+        },
+        {
+          "captured": true,
+          "capture_step": 6,
+          "collision_steps": 86,
+          "predator_return": 2263.640380859375,
+          "prey_return": -996.2525634765625
+        },
+        {
+          "captured": true,
+          "capture_step": 4,
+          "collision_steps": 91,
+          "predator_return": 2372.697998046875,
+          "prey_return": -1067.9498291015625
+        },
+        {
+          "captured": true,
+          "capture_step": 3,
+          "collision_steps": 90,
+          "predator_return": 2373.501708984375,
+          "prey_return": -1115.285888671875
+        },
+        {
+          "captured": true,
+          "capture_step": 3,
+          "collision_steps": 96,
+          "predator_return": 2589.32958984375,
+          "prey_return": -1149.228515625
+        },
+        {
+          "captured": true,
+          "capture_step": 5,
+          "collision_steps": 87,
+          "predator_return": 2373.79150390625,
+          "prey_return": -1064.9697265625
+        },
+        {
+          "captured": true,
+          "capture_step": 5,
+          "collision_steps": 88,
+          "predator_return": 2465.9052734375,
+          "prey_return": -1147.0355224609375
+        },
+        {
+          "captured": true,
+          "capture_step": 5,
+          "collision_steps": 91,
+          "predator_return": 2470.538818359375,
+          "prey_return": -1102.755859375
+        },
+        {
+          "captured": true,
+          "capture_step": 5,
+          "collision_steps": 83,
+          "predator_return": 2080.985595703125,
+          "prey_return": -1063.1414794921875
+        },
+        {
+          "captured": true,
+          "capture_step": 4,
+          "collision_steps": 88,
+          "predator_return": 2124.469482421875,
+          "prey_return": -1009.8082885742188
+        },
+        {
+          "captured": true,
+          "capture_step": 2,
+          "collision_steps": 96,
+          "predator_return": 2664.056884765625,
+          "prey_return": -1251.0360107421875
+        },
+        {
+          "captured": true,
+          "capture_step": 4,
+          "collision_steps": 82,
+          "predator_return": 2226.020263671875,
+          "prey_return": -1013.7163696289062
+        },
+        {
+          "captured": true,
+          "capture_step": 3,
+          "collision_steps": 85,
+          "predator_return": 2288.0439453125,
+          "prey_return": -1052.1680908203125
+        },
+        {
+          "captured": true,
+          "capture_step": 2,
+          "collision_steps": 87,
+          "predator_return": 2061.212158203125,
+          "prey_return": -1034.496337890625
+        },
+        {
+          "captured": true,
+          "capture_step": 4,
+          "collision_steps": 83,
+          "predator_return": 2166.3515625,
+          "prey_return": -980.1312866210938
+        },
+        {
+          "captured": true,
+          "capture_step": 2,
+          "collision_steps": 88,
+          "predator_return": 2314.889404296875,
+          "prey_return": -1201.775146484375
+        },
+        {
+          "captured": true,
+          "capture_step": 2,
+          "collision_steps": 89,
+          "predator_return": 2415.6015625,
+          "prey_return": -1077.90625
+        },
+        {
+          "captured": true,
+          "capture_step": 2,
+          "collision_steps": 95,
+          "predator_return": 2552.652587890625,
+          "prey_return": -1126.667236328125
+        },
+        {
+          "captured": true,
+          "capture_step": 5,
+          "collision_steps": 87,
+          "predator_return": 2511.621826171875,
+          "prey_return": -1129.0
+        },
+        {
+          "captured": true,
+          "capture_step": 3,
+          "collision_steps": 88,
+          "predator_return": 2308.9833984375,
+          "prey_return": -1059.99072265625
+        },
+        {
+          "captured": true,
+          "capture_step": 3,
+          "collision_steps": 87,
+          "predator_return": 2403.400390625,
+          "prey_return": -1061.0
+        },
+        {
+          "captured": true,
+          "capture_step": 5,
+          "collision_steps": 90,
+          "predator_return": 2647.8740234375,
+          "prey_return": -1188.94384765625
+        },
+        {
+          "captured": true,
+          "capture_step": 5,
+          "collision_steps": 89,
+          "predator_return": 2444.680908203125,
+          "prey_return": -1112.277099609375
+        },
+        {
+          "captured": true,
+          "capture_step": 4,
+          "collision_steps": 90,
+          "predator_return": 2558.269287109375,
+          "prey_return": -1148.8408203125
+        },
+        {
+          "captured": true,
+          "capture_step": 1,
+          "collision_steps": 96,
+          "predator_return": 2535.70068359375,
+          "prey_return": -1110.0
+        },
+        {
+          "captured": true,
+          "capture_step": 4,
+          "collision_steps": 90,
+          "predator_return": 2468.432373046875,
+          "prey_return": -1111.135498046875
+        },
+        {
+          "captured": true,
+          "capture_step": 3,
+          "collision_steps": 92,
+          "predator_return": 2482.569091796875,
+          "prey_return": -1104.146484375
+        },
+        {
+          "captured": true,
+          "capture_step": 3,
+          "collision_steps": 84,
+          "predator_return": 2311.604248046875,
+          "prey_return": -1053.42919921875
+        },
+        {
+          "captured": true,
+          "capture_step": 4,
+          "collision_steps": 85,
+          "predator_return": 2295.845458984375,
+          "prey_return": -1033.0089111328125
+        },
+        {
+          "captured": true,
+          "capture_step": 2,
+          "collision_steps": 94,
+          "predator_return": 2468.448974609375,
+          "prey_return": -1140.0196533203125
+        },
+        {
+          "captured": true,
+          "capture_step": 5,
+          "collision_steps": 92,
+          "predator_return": 2444.841552734375,
+          "prey_return": -1099.2755126953125
+        },
+        {
+          "captured": true,
+          "capture_step": 5,
+          "collision_steps": 90,
+          "predator_return": 2444.923828125,
+          "prey_return": -1084.109619140625
+        },
+        {
+          "captured": true,
+          "capture_step": 2,
+          "collision_steps": 86,
+          "predator_return": 2293.961669921875,
+          "prey_return": -1033.23095703125
+        }
+      ]
+    }
+  }
+}

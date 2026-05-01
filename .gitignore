@@ -1,5 +1,17 @@
 __pycache__
 results
+# Allow selected experiment outputs under onpolicy/scripts/results to be tracked.
+!onpolicy/scripts/results/
+!onpolicy/scripts/results/MPE/
+!onpolicy/scripts/results/MPE/simple_tag/
+!onpolicy/scripts/results/MPE/simple_tag/mappo/
+onpolicy/scripts/results/MPE/simple_tag/mappo/*
+!onpolicy/scripts/results/MPE/simple_tag/mappo/step1_full*/
+!onpolicy/scripts/results/MPE/simple_tag/mappo/step1_full*/**
+!onpolicy/scripts/results/MPE/simple_tag/mappo/step2_*/
+!onpolicy/scripts/results/MPE/simple_tag/mappo/step2_*/**
+!onpolicy/scripts/results/MPE/simple_tag/mappo/base_reward*/
+!onpolicy/scripts/results/MPE/simple_tag/mappo/base_reward*/**
 *.pyc
 /gifs/
 build

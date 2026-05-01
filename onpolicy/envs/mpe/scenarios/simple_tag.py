@@ -6,7 +6,19 @@ class Scenario(BaseScenario):
     def make_world(self, args):
         world = World()
         # set any world properties first
-        world.dim_c = 2
+        use_simple_comm = getattr(args, "use_simple_comm", False)
+        comm_dim = getattr(args, "comm_dim", 2)
+        comm_target = getattr(args, "comm_target", "all")
+
+        if use_simple_comm and comm_dim <= 0:
+            raise ValueError("comm_dim must be a positive integer when --use_simple_comm is enabled.")
+        if comm_target not in {"all", "adversaries", "good_agents"}:
+            raise ValueError("comm_target must be one of: all, adversaries, good_agents.")
+
+        world.dim_c = comm_dim if use_simple_comm else 0
+        world.use_simple_comm = use_simple_comm
+        world.comm_target = comm_target
+        world.comm_has_null_action = use_simple_comm and getattr(args, "use_comm_l1_penalty", False)
         num_good_agents = args.num_good_agents#1
         num_adversaries = args.num_adversaries#3
         num_agents = num_adversaries + num_good_agents
@@ -16,8 +28,8 @@ class Scenario(BaseScenario):
         for i, agent in enumerate(world.agents):
             agent.name = 'agent %d' % i
             agent.collide = True
-            agent.silent = False
             agent.adversary = True if i < num_adversaries else False
+            agent.silent = not self._can_communicate(agent, world)
             agent.size = 0.075 if agent.adversary else 0.05
             agent.accel = 3.0 if agent.adversary else 4.0
             #agent.accel = 20.0 if agent.adversary else 25.0
@@ -33,6 +45,18 @@ class Scenario(BaseScenario):
         # make initial conditions
         self.reset_world(world)
         return world
+
+    def _can_communicate(self, agent, world):
+        if not getattr(world, "use_simple_comm", False):
+            return False
+
+        if world.comm_target == "all":
+            return True
+        if world.comm_target == "adversaries":
+            return agent.adversary
+        if world.comm_target == "good_agents":
+            return not agent.adversary
+        return False
 
     def reset_world(self, world):
         # random properties for agents
@@ -84,65 +108,162 @@ class Scenario(BaseScenario):
         return main_reward
 
     def agent_reward(self, agent, world):
-        # Agents are negatively rewarded if caught by adversaries
+        """
+        Sheep (good agent) 的 reward
+        被抓 -> 大额负奖励
+        撞墙/landmark -> 小额负奖励
+        远离wolves -> 正奖励 (shaping)
+        """
         rew = 0
-        shape = False #different from openai
+        shape = False  # 默认关闭shaping，遵循原始MADDPG设定；如果需要可以打开
         adversaries = self.adversaries(world)
-        if shape:  # reward can optionally be shaped (increased reward for increased distance from adversary)
-            for adv in adversaries:
-                rew += 0.1 * np.sqrt(np.sum(np.square(agent.state.p_pos - adv.state.p_pos)))
+
+        if shape:
+            # Shaping: sheep距离最近的wolf越远越好
+            # FIX: 用 agent (sheep自己) 计算距离，不要loop adv
+            rew += 0.1 * min([
+                np.sqrt(np.sum(np.square(agent.state.p_pos - adv.state.p_pos)))
+                for adv in adversaries
+            ])
+
         if agent.collide:
-            for a in adversaries:
-                if self.is_collision(a, agent):
+            for adv in adversaries:
+                if self.is_collision(adv, agent):
                     rew -= 10
-        # penalty for collision （new）
+
+        # Penalty for collision with landmarks
         for lm in world.landmarks:
             if self.is_collision(agent, lm):
                 rew -= 1.0
 
-        # agents are penalized for exiting the screen, so that they can be caught by the adversaries
+        # Boundary penalty
         def bound(x):
             if x < 0.9:
                 return 0
             if x < 1.0:
                 return (x - 0.9) * 10
             return min(np.exp(2 * x - 2), 10)
+
         for p in range(world.dim_p):
             x = abs(agent.state.p_pos[p])
             rew -= bound(x)
 
         return rew
+
 
     def adversary_reward(self, agent, world):
-        # Adversaries are rewarded for collisions with agents
+        """
+        Wolf (adversary) 的 reward - FIXED VERSION
+
+        关键修正：
+        1. Distance shaping: 只用 agent (当前wolf自己) 到sheep的距离，
+        不要 loop 所有 adversaries 求和
+        2. Collision reward: 只在 agent 自己抓到时才 +reward，
+        避免 free-rider problem
+        3. Landmark penalty: 保持不变
+        """
         rew = 0
-        shape = True #different from openai
-        agents = self.good_agents(world)
-        adversaries = self.adversaries(world)
-        if shape:  # reward can optionally be shaped (decreased reward for increased distance from agents)
-            for adv in adversaries:
-                rew -= 0.1 * min([np.sqrt(np.sum(np.square(a.state.p_pos - adv.state.p_pos))) for a in agents])
+        shape = True
+        agents = self.good_agents(world)  # sheep list (通常只有1只)
+
+        # ===== FIX #1: Distance shaping (per-agent, not summed) =====
+        # 原bug: for adv in adversaries: rew -= 0.1 * min(dist(a, adv))
+        #        三只wolf都拿到 sum-of-distances，credit assignment崩溃
+        # FIX:   只用agent自己到最近sheep的距离
+        if shape:
+            rew -= 0.1 * min([
+                np.sqrt(np.sum(np.square(a.state.p_pos - agent.state.p_pos)))
+                for a in agents
+            ])
+
+        # ===== FIX #2: Collision reward (only self, not teammates) =====
+        # 原bug: for ag in agents: for adv in adversaries:
+        #        if collision(ag, adv): rew += 50
+        #        所有 wolf 都拿 +50，无论是不是自己抓到的，free-rider problem
+        # FIX:   只在 agent (当前wolf) 自己抓到sheep时 +reward
         if agent.collide:
             for ag in agents:
-                for adv in adversaries:
-                    if self.is_collision(ag, adv):
-                        rew += 50.0
-        # penalty for collision （new）
+                if self.is_collision(ag, agent):
+                    rew += 50.0  # 自己抓到，主奖励
+            # 可选：team reward (撞到的wolf拿大份，没撞到的拿小份)
+            # 这能鼓励coordination而不是单兵作战
+            # 注释掉下面这段如果不想要 team reward
+            else:
+                for ag in agents:
+                    for adv in self.adversaries(world):
+                        if adv is not agent and self.is_collision(ag, adv):
+                            rew += 10.0  # 队友抓到，分一点信用
+                            break
+
+        # ===== Landmark collision penalty (unchanged) =====
         for lm in world.landmarks:
             if self.is_collision(agent, lm):
                 rew -= 1.0
 
-        def bound(x):
-            if x < 0.9:
-                return 0
-            if x < 1.0:
-                return (x - 0.9) * 10
-            return min(np.exp(2 * x - 2), 10)
-        for p in range(world.dim_p):
-            x = abs(agent.state.p_pos[p])
-            rew -= bound(x)
-
         return rew
+
+
+
+    # def agent_reward(self, agent, world):
+    #     # Agents are negatively rewarded if caught by adversaries
+    #     rew = 0
+    #     shape = False #different from openai
+    #     adversaries = self.adversaries(world)
+    #     if shape:  # reward can optionally be shaped (increased reward for increased distance from adversary)
+    #         for adv in adversaries:
+    #             rew += 0.1 * np.sqrt(np.sum(np.square(agent.state.p_pos - adv.state.p_pos)))
+    #     if agent.collide:
+    #         for a in adversaries:
+    #             if self.is_collision(a, agent):
+    #                 rew -= 10
+    #     # penalty for collision （new）
+    #     for lm in world.landmarks:
+    #         if self.is_collision(agent, lm):
+    #             rew -= 1.0
+
+    #     # agents are penalized for exiting the screen, so that they can be caught by the adversaries
+    #     def bound(x):
+    #         if x < 0.9:
+    #             return 0
+    #         if x < 1.0:
+    #             return (x - 0.9) * 10
+    #         return min(np.exp(2 * x - 2), 10)
+    #     for p in range(world.dim_p):
+    #         x = abs(agent.state.p_pos[p])
+    #         rew -= bound(x)
+
+    #     return rew
+
+    # def adversary_reward(self, agent, world):
+    #     # Adversaries are rewarded for collisions with agents
+    #     rew = 0
+    #     shape = True #different from openai
+    #     agents = self.good_agents(world)
+    #     adversaries = self.adversaries(world)
+    #     if shape:  # reward can optionally be shaped (decreased reward for increased distance from agents)
+    #         for adv in adversaries:
+    #             rew -= 0.1 * min([np.sqrt(np.sum(np.square(a.state.p_pos - adv.state.p_pos))) for a in agents])
+    #     if agent.collide:
+    #         for ag in agents:
+    #             for adv in adversaries:
+    #                 if self.is_collision(ag, adv):
+    #                     rew += 50.0
+    #     # penalty for collision （new）
+    #     for lm in world.landmarks:
+    #         if self.is_collision(agent, lm):
+    #             rew -= 1.0
+
+    #     def bound(x):
+    #         if x < 0.9:
+    #             return 0
+    #         if x < 1.0:
+    #             return (x - 0.9) * 10
+    #         return min(np.exp(2 * x - 2), 10)
+    #     for p in range(world.dim_p):
+    #         x = abs(agent.state.p_pos[p])
+    #         rew -= bound(x)
+
+    #     return rew
 
     def observation(self, agent, world):
         # get positions of all entities in this agent's reference frame

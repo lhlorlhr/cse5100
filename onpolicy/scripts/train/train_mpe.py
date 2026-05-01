@@ -2,13 +2,17 @@
 import sys
 import os
 import socket
-import setproctitle
 import numpy as np
 from pathlib import Path
 import torch
 from onpolicy.config import get_config
 from onpolicy.envs.mpe.MPE_env import MPEEnv
 from onpolicy.envs.env_wrappers import SubprocVecEnv, DummyVecEnv
+
+try:
+    import setproctitle
+except ModuleNotFoundError:
+    setproctitle = None
 
 """Train script for MPEs."""
 
@@ -106,7 +110,13 @@ def main(args):
 
     # wandb
     if all_args.use_wandb:
-        import wandb
+        try:
+            import wandb
+        except Exception as exc:
+            raise ImportError(
+                "W&B logging was requested with --use_wandb, but wandb could not be imported. "
+                "Fix the wandb installation or run without --use_wandb."
+            ) from exc
         run = wandb.init(config=all_args,
                          project=all_args.env_name,
                          entity=all_args.user_name,
@@ -131,8 +141,9 @@ def main(args):
         if not run_dir.exists():
             os.makedirs(str(run_dir))
 
-    setproctitle.setproctitle(str(all_args.algorithm_name) + "-" + \
-        str(all_args.env_name) + "-" + str(all_args.experiment_name) + "@" + str(all_args.user_name))
+    if setproctitle is not None:
+        setproctitle.setproctitle(str(all_args.algorithm_name) + "-" + \
+            str(all_args.env_name) + "-" + str(all_args.experiment_name) + "@" + str(all_args.user_name))
 
     # seed
     torch.manual_seed(all_args.seed)
