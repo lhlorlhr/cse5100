@@ -214,7 +214,6 @@ def main(args):
                 raw_actions.append(action.detach().cpu().numpy()[0])
                 next_rnn_states[agent_id] = next_rnn_state.detach().cpu().numpy()[0]
 
-            raw_actions = np.asarray(raw_actions)
             rnn_states = next_rnn_states
 
             actions_env = []

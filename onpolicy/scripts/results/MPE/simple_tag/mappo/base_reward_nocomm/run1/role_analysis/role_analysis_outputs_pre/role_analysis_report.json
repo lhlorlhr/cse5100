@@ -1,0 +1,66 @@
+{
+  "trajectory_path": "/Users/thunder/Documents/CSE5100/Final/barrier_problem_fix/onpolicy/scripts/results/MPE/simple_tag/mappo/base_reward_nocomm/run1/role_analysis/role_trajectories.pkl",
+  "state": "pre",
+  "n_samples": 60000,
+  "features": [
+    "distance_rank",
+    "distance",
+    "front_back",
+    "lateral_signed",
+    "lateral_abs"
+  ],
+  "role_map": {
+    "2": "Chaser",
+    "1": "Flanker",
+    "0": "Blocker"
+  },
+  "metrics": {
+    "heuristic/vanilla": {
+      "n_samples": 60000,
+      "n_clusters_present": 3,
+      "normalized_inertia": 0.499060720205307,
+      "silhouette": 0.36080071330070496,
+      "davies_bouldin": 1.223628478339837,
+      "calinski_harabasz": 30110.34721534018
+    }
+  },
+  "message_role_stats": {
+    "has_policy_messages": false,
+    "mutual_info_policy_message_role": null,
+    "normalized_mutual_info_policy_message_role": null,
+    "n_vanilla_samples": 60000,
+    "n_policy_message_tokens": 0,
+    "n_roles": 3
+  },
+  "metadata": {
+    "model_dir": "/Users/thunder/Documents/CSE5100/Final/barrier_problem_fix/onpolicy/scripts/results/MPE/simple_tag/mappo/base_reward_nocomm/run1/models",
+    "seed": 1,
+    "episode_length": 100,
+    "eval_episodes": 200,
+    "fixed_opponent_policy": "heuristic",
+    "interventions": [
+      "vanilla"
+    ],
+    "use_simple_comm": false,
+    "comm_dim": 0,
+    "comm_target": "all",
+    "has_communication": false,
+    "predator_ids": [
+      0,
+      1,
+      2
+    ],
+    "communicator_metadata": {},
+    "summaries": {
+      "heuristic": {
+        "vanilla": {
+          "n_episodes": 200,
+          "capture_rate": 1.0,
+          "mean_capture_step": 3.675,
+          "mean_predator_return": 2279.1696252441407,
+          "mean_prey_return": -1087.3485360717773
+        }
+      }
+    }
+  }
+}

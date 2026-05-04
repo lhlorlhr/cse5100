@@ -193,6 +193,10 @@ def get_config():
                         help="Apply a communication activity penalty during MPE training.")
     parser.add_argument("--comm_l1_coef", type=float, default=0.0,
                         help="Penalty coefficient for communication activity when --use_comm_l1_penalty is enabled.")
+    parser.add_argument("--use_partial_obs", action='store_true', default=False,
+                        help="Mask MPE simple_tag entity/agent observations outside a local visibility radius.")
+    parser.add_argument("--partial_obs_radius", type=float, default=1.0,
+                        help="Visibility radius used by --use_partial_obs in supported MPE scenarios.")
 
     # replay buffer parameters
     parser.add_argument("--episode_length", type=int,

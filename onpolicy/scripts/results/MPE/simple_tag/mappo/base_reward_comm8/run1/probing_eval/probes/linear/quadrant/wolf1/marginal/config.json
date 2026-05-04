@@ -1,0 +1,13 @@
+{
+  "task": "quadrant",
+  "probe_type": "linear",
+  "message_variant": "marginal",
+  "variant_label": "marginal",
+  "random_policy_seed": null,
+  "wolf_id": 1,
+  "split_seed": 1,
+  "marginal_seed": 1,
+  "train_ratio": 0.7,
+  "val_ratio": 0.15,
+  "feature_dim": 8
+}

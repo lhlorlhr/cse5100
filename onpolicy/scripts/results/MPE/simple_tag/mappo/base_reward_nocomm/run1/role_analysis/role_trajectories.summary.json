@@ -1,0 +1,31 @@
+{
+  "model_dir": "/Users/thunder/Documents/CSE5100/Final/barrier_problem_fix/onpolicy/scripts/results/MPE/simple_tag/mappo/base_reward_nocomm/run1/models",
+  "seed": 1,
+  "episode_length": 100,
+  "eval_episodes": 200,
+  "fixed_opponent_policy": "heuristic",
+  "interventions": [
+    "vanilla"
+  ],
+  "use_simple_comm": false,
+  "comm_dim": 0,
+  "comm_target": "all",
+  "has_communication": false,
+  "predator_ids": [
+    0,
+    1,
+    2
+  ],
+  "communicator_metadata": {},
+  "summaries": {
+    "heuristic": {
+      "vanilla": {
+        "n_episodes": 200,
+        "capture_rate": 1.0,
+        "mean_capture_step": 3.675,
+        "mean_predator_return": 2279.1696252441407,
+        "mean_prey_return": -1087.3485360717773
+      }
+    }
+  }
+}

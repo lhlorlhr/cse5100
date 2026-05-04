@@ -1,0 +1,13 @@
+{
+  "task": "closest_wolf_id",
+  "probe_type": "linear",
+  "message_variant": "random",
+  "variant_label": "random_seed1",
+  "random_policy_seed": 1,
+  "wolf_id": null,
+  "split_seed": 1,
+  "marginal_seed": 1,
+  "train_ratio": 0.7,
+  "val_ratio": 0.15,
+  "feature_dim": 24
+}

@@ -1,0 +1,43 @@
+{
+  "model_dir": "/Users/thunder/Documents/CSE5100/Final/barrier_problem_fix/onpolicy/scripts/results/MPE/simple_tag/mappo/base_reward_comm8/run1/models",
+  "env_name": "MPE",
+  "scenario_name": "simple_tag",
+  "n_episodes": 500,
+  "episode_length": 100,
+  "num_samples": 50000,
+  "predator_ids": [
+    0,
+    1,
+    2
+  ],
+  "prey_ids": [
+    3
+  ],
+  "comm_dim_effective": 8,
+  "deterministic": false,
+  "fixed_opponent_policy": "heuristic",
+  "random_policy_seeds": [
+    1,
+    2,
+    3
+  ],
+  "dataset_keys": [
+    "closest_wolf_id",
+    "distance",
+    "distance_bin",
+    "episode_id",
+    "is_self_closest",
+    "msg_random_seed1",
+    "msg_random_seed2",
+    "msg_random_seed3",
+    "msg_trained",
+    "octant",
+    "quadrant",
+    "sheep_rel_xy",
+    "sheep_vel",
+    "sheep_xy",
+    "timestep",
+    "wolf_obs",
+    "wolf_xy"
+  ]
+}

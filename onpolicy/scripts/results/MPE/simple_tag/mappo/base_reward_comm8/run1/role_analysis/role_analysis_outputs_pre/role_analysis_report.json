@@ -1,0 +1,98 @@
+{
+  "trajectory_path": "/Users/thunder/Documents/CSE5100/Final/barrier_problem_fix/onpolicy/scripts/results/MPE/simple_tag/mappo/base_reward_comm8/run1/role_analysis/role_trajectories.pkl",
+  "state": "pre",
+  "n_samples": 120000,
+  "features": [
+    "distance_rank",
+    "distance",
+    "front_back",
+    "lateral_signed",
+    "lateral_abs"
+  ],
+  "role_map": {
+    "1": "Chaser",
+    "2": "Flanker",
+    "0": "Blocker"
+  },
+  "metrics": {
+    "heuristic/vanilla": {
+      "n_samples": 60000,
+      "n_clusters_present": 3,
+      "normalized_inertia": 0.4939083456993103,
+      "silhouette": 0.35811200737953186,
+      "davies_bouldin": 1.1142085010299592,
+      "calinski_harabasz": 30737.290440468172
+    },
+    "heuristic/zero": {
+      "n_samples": 60000,
+      "n_clusters_present": 3,
+      "normalized_inertia": 0.49734359979629517,
+      "silhouette": 0.3640673756599426,
+      "davies_bouldin": 1.0968035537908694,
+      "calinski_harabasz": 30459.225991804815
+    }
+  },
+  "message_role_stats": {
+    "mutual_info_policy_message_role": 0.014031802039476533,
+    "normalized_mutual_info_policy_message_role": 0.010169896811108308,
+    "n_vanilla_samples": 60000,
+    "n_policy_message_tokens": 8,
+    "n_roles": 3
+  },
+  "metadata": {
+    "model_dir": "/Users/thunder/Documents/CSE5100/Final/barrier_problem_fix/onpolicy/scripts/results/MPE/simple_tag/mappo/base_reward_comm8/run1/models",
+    "seed": 1,
+    "episode_length": 100,
+    "eval_episodes": 200,
+    "fixed_opponent_policy": "heuristic",
+    "interventions": [
+      "vanilla",
+      "zero"
+    ],
+    "comm_dim": 8,
+    "comm_target": "adversaries",
+    "predator_ids": [
+      0,
+      1,
+      2
+    ],
+    "communicator_metadata": {
+      "0": {
+        "slice": [
+          5,
+          13
+        ]
+      },
+      "1": {
+        "slice": [
+          5,
+          13
+        ]
+      },
+      "2": {
+        "slice": [
+          5,
+          13
+        ]
+      }
+    },
+    "summaries": {
+      "heuristic": {
+        "vanilla": {
+          "n_episodes": 200,
+          "capture_rate": 1.0,
+          "mean_capture_step": 3.57,
+          "mean_predator_return": 2418.136301269531,
+          "mean_prey_return": -1112.4854733276368
+        },
+        "zero": {
+          "n_episodes": 200,
+          "capture_rate": 1.0,
+          "mean_capture_step": 3.53,
+          "mean_predator_return": 2482.66943359375,
+          "mean_prey_return": -1118.6885311889648
+        }
+      }
+    }
+  }
+}

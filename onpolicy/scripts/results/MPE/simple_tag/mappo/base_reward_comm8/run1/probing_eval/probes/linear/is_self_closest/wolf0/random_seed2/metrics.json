@@ -1,0 +1,24 @@
+{
+  "dataset_path": "/Users/thunder/Documents/CSE5100/Final/barrier_problem_fix/onpolicy/scripts/results/MPE/simple_tag/mappo/base_reward_comm8/run1/probing_eval/dataset/probe_data.npz",
+  "task": "is_self_closest",
+  "probe_type": "linear",
+  "message_variant": "random",
+  "variant_label": "random_seed2",
+  "wolf_id": 0,
+  "split_seed": 1,
+  "marginal_seed": 1,
+  "train_ratio": 0.7,
+  "val_ratio": 0.15,
+  "n_train_samples": 35000,
+  "n_val_samples": 7500,
+  "n_test_samples": 7500,
+  "n_train_episodes": 350,
+  "n_val_episodes": 75,
+  "n_test_episodes": 75,
+  "metrics": {
+    "accuracy": 0.5089333333333333,
+    "balanced_accuracy": 0.5094081969319255,
+    "macro_f1": 0.4944604227710948,
+    "auroc": 0.5066608922540745
+  }
+}

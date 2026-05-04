@@ -19,6 +19,10 @@ class Scenario(BaseScenario):
         world.use_simple_comm = use_simple_comm
         world.comm_target = comm_target
         world.comm_has_null_action = use_simple_comm and getattr(args, "use_comm_l1_penalty", False)
+        world.use_partial_obs = getattr(args, "use_partial_obs", False)
+        world.partial_obs_radius = getattr(args, "partial_obs_radius", 1.0)
+        if world.use_partial_obs and world.partial_obs_radius <= 0:
+            raise ValueError("partial_obs_radius must be positive when --use_partial_obs is enabled.")
         num_good_agents = args.num_good_agents#1
         num_adversaries = args.num_adversaries#3
         num_agents = num_adversaries + num_good_agents
@@ -100,6 +104,12 @@ class Scenario(BaseScenario):
     # return all adversarial agents
     def adversaries(self, world):
         return [agent for agent in world.agents if agent.adversary]
+
+    def _visible(self, agent, entity, world):
+        if not getattr(world, "use_partial_obs", False):
+            return True
+        delta_pos = entity.state.p_pos - agent.state.p_pos
+        return np.sqrt(np.sum(np.square(delta_pos))) <= world.partial_obs_radius
 
 
     def reward(self, agent, world):
@@ -270,7 +280,10 @@ class Scenario(BaseScenario):
         entity_pos = []
         for entity in world.landmarks:
             if not entity.boundary:
-                entity_pos.append(entity.state.p_pos - agent.state.p_pos)
+                if self._visible(agent, entity, world):
+                    entity_pos.append(entity.state.p_pos - agent.state.p_pos)
+                else:
+                    entity_pos.append(np.zeros(world.dim_p))
         # communication of all other agents
         comm = []
         other_pos = []
@@ -278,9 +291,15 @@ class Scenario(BaseScenario):
         for other in world.agents:
             if other is agent: continue
             comm.append(other.state.c)
-            other_pos.append(other.state.p_pos - agent.state.p_pos)
+            if self._visible(agent, other, world):
+                other_pos.append(other.state.p_pos - agent.state.p_pos)
+            else:
+                other_pos.append(np.zeros(world.dim_p))
             if not other.adversary:
-                other_vel.append(other.state.p_vel)
+                if self._visible(agent, other, world):
+                    other_vel.append(other.state.p_vel)
+                else:
+                    other_vel.append(np.zeros(world.dim_p))
         obs = np.concatenate([agent.state.p_vel] + [agent.state.p_pos] + entity_pos + other_pos + other_vel + comm)
         # Pad to uniform obs size across all agents (adversaries observe good agent vel, good agent does not)
         num_adversaries = sum(1 for a in world.agents if a.adversary)
